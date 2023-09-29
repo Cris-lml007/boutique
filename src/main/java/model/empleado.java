@@ -22,6 +22,11 @@ public class empleado extends db{
     public String nombre;
     private int rol;
     private String contraseña;
+    public String usuario;
+    
+    public void setUsuario(String txt){
+        this.usuario=txt;
+    }
 
     public void setRol(int rol) {
         this.rol = rol;
@@ -34,13 +39,14 @@ public class empleado extends db{
     public empleado(int ci){
         super();
         try{
-            String sql="select * from emplado where ci="+ci;
+            String sql="select * from empleado where ci="+ci;
             ResultSet r=queryResult(sql);
             while(r.next()){
                 this.ci=r.getInt("ci");
                 this.apellido=r.getString("apellido");
                 this.nombre=r.getString("nombre");
                 this.rol=r.getInt("rol");
+                this.usuario=r.getString("usuario");
             }
             active=true;
         }catch(SQLException e){
@@ -98,24 +104,25 @@ public class empleado extends db{
         return rol;
     }
     
-    public void where(String result[],String condition[]){
+    /*public void where(String result[],String condition[]){
         String sql="select"+String.join(",",result)+" where "+String.join(" ",condition);
         try{
             ResultSet r=queryResult(sql);
             Map<String,String>obj=new HashMap<String,String>();
             ResultSetMetaData meta=r.getMetaData();
             for(int i=0;r.next();i++){
-                obj.put(meta.getColumnName(ci),r.getString(1));
+                obj.put(meta.getColumnName(ci),r.getString(i));
             }
         }catch(SQLException e){
             System.out.println("error where: "+e);
         }
-    }
-    
+    }*/
     
     public static void main(String []args){
-        Map<String,String>a=new HashMap<String,String>();
-        a.put("as", "hola");
-        System.out.println(a.get("as"));
+        empleado a=new empleado();
+        String aa[]=new String[2];
+        aa[0]="ci";
+        aa[1]="nombre";
+        //a.where(new String[""],"");
     }
 }

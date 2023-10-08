@@ -4,6 +4,8 @@
 
 package com.mycompany.boutique;
 
+import model.db;
+
 /**
  *
  * @author metallica

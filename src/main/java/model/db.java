@@ -5,7 +5,11 @@
 package model;
 import java.sql.*;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.Vector;
+import javax.swing.DefaultListModel;
+import javax.swing.ListModel;
 /**
  *
  * @author metallica
@@ -51,21 +55,56 @@ public class db {
         }
     }
     
-    public Map<String,String> where(String result[],String condition){
+    
+    //return a DefaultListModel with HashMap that have all data query requiered
+    public DefaultListModel<Map> where(String result[],String condition){
+        DefaultListModel<Map>list=new DefaultListModel<Map>();
         String nameClass=this.getClass().getSimpleName();
-        String sql="select"+String.join(",",result)+" from "+nameClass+" where "+condition;
+        String sql="select "+String.join(",",result)+" from "+nameClass+" where "+condition;
         try{
             ResultSet r=queryResult(sql);
             Map<String,String>obj=new HashMap<String,String>();
             ResultSetMetaData meta=r.getMetaData();
-            for(int i=0;r.next();i++){
-                obj.put(meta.getColumnName(i),r.getString(i+1));
+            while(r.next()){
+                for(int i=1;i<=r.getMetaData().getColumnCount();i++){
+                    obj.put(meta.getColumnName(i),r.getString(i));
+                }
+                list.addElement(obj);
             }
-            return obj;
+            return list;
         }catch(SQLException e){
             System.out.println("error where: "+e);
             return null;
         }
+    }
+    
+    protected static DefaultListModel<DefaultListModel> all(String name){
+        db c=new db();
+        String sql="select * from "+name;
+        try{
+            ResultSet result=c.queryResult(sql);
+            DefaultListModel<DefaultListModel>list=new DefaultListModel<>();
+            DefaultListModel<String> obj=new DefaultListModel<>();
+            while(result.next()){
+                for(int i=1;i<=result.getMetaData().getColumnCount();i++){
+                    obj.addElement(result.getString(i));
+                }
+                list.addElement(obj);
+            }
+            return list;
+        }catch(SQLException e){
+            System.out.println("error all: "+e);
+            return null;
+        }
+    }
+    
+    
+    public static void main(String [] args){
+        db a=new db();
+        String aa[]=new String[1];
+        aa[0]="*";
+        Map<String,String>w=a.where(aa,"ci=1234").lastElement();
+        System.out.println(w.get("usuario"));
     }
     
 }

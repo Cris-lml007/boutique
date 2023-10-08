@@ -5,11 +5,8 @@
 package model;
 
 import java.sql.ResultSet;
-import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Map;
+import javax.swing.DefaultListModel;
 
 /**
  *
@@ -17,12 +14,12 @@ import java.util.Map;
  */
 public class empleado extends db{
     private boolean active=false;
-    public int ci;
-    public String apellido;
-    public String nombre;
-    private int rol;
+    protected int ci;
+    protected String apellido;
+    protected String nombre;
+    protected int rol;
     private String contraseña;
-    public String usuario;
+    protected String usuario;
     
     public void setUsuario(String txt){
         this.usuario=txt;
@@ -104,25 +101,26 @@ public class empleado extends db{
         return rol;
     }
     
-    /*public void where(String result[],String condition[]){
-        String sql="select"+String.join(",",result)+" where "+String.join(" ",condition);
-        try{
-            ResultSet r=queryResult(sql);
-            Map<String,String>obj=new HashMap<String,String>();
-            ResultSetMetaData meta=r.getMetaData();
-            for(int i=0;r.next();i++){
-                obj.put(meta.getColumnName(ci),r.getString(i));
-            }
-        }catch(SQLException e){
-            System.out.println("error where: "+e);
+    public static empleado[] all(){
+        DefaultListModel<DefaultListModel> list=db.all("empleado");
+        empleado r[]=new empleado[list.size()];
+        for(int i=0;i<list.size();i++){
+            DefaultListModel<String> obj=list.get(i);
+            r[i]=new empleado();
+            r[i].ci=Integer.parseInt(obj.get(i));
+            r[i].nombre=obj.get(1);
+            r[i].apellido=obj.get(2);
+            r[i].rol=Integer.parseInt(obj.get(3));
+            r[i].usuario=obj.get(5).toString();
         }
-    }*/
+        return r;
+    }
     
     public static void main(String []args){
-        empleado a=new empleado();
-        String aa[]=new String[2];
+        empleado a[]=empleado.all();
+        /*String aa[]=new String[2];
         aa[0]="ci";
-        aa[1]="nombre";
-        //a.where(new String[""],"");
+        aa[1]="nombre";*/
+        System.out.println(a[0].getNombre());
     }
 }

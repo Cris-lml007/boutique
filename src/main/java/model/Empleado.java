@@ -97,10 +97,6 @@ public class Empleado implements Serializable {
         
         this.contraseña = md5.getMD5Hash(contraseña);
     }
-    
-    public String getContraseña(){
-        return contraseña;
-    }
 
     public String getUsuario() {
         return usuario;

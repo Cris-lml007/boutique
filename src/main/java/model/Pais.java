@@ -5,9 +5,15 @@
 package model;
 
 import java.io.Serializable;
+import java.util.List;
+import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.Id;
+import javax.persistence.NamedQueries;
+import javax.persistence.NamedQuery;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
 /**
@@ -15,20 +21,26 @@ import javax.persistence.Table;
  * @author metallica
  */
 @Entity
-@Table(name = "pais")
+@Table(name = "PAIS", catalog = "boutique1", schema = "")
+@NamedQueries({
+    @NamedQuery(name = "Pais.findAll", query = "SELECT p FROM Pais p")})
 public class Pais implements Serializable {
+
+    private static final long serialVersionUID = 1L;
     @Id
-    @Column(name = "cod")
-    String cod;
-    @Column(name = "nombre")
-    String pais;
+    @Basic(optional = false)
+    @Column(name = "COD", nullable = false, length = 10)
+    private String cod;
+    @Column(name = "NOMBRE", length = 30)
+    private String nombre;
+    @OneToMany(mappedBy = "pais", fetch = FetchType.LAZY)
+    private List<Localizacion> localizacionList;
 
     public Pais() {
     }
 
-    public Pais(String cod, String pais) {
+    public Pais(String cod) {
         this.cod = cod;
-        this.pais = pais;
     }
 
     public String getCod() {
@@ -39,13 +51,45 @@ public class Pais implements Serializable {
         this.cod = cod;
     }
 
-    public String getPais() {
-        return pais;
+    public String getNombre() {
+        return nombre;
     }
 
-    public void setPais(String pais) {
-        this.pais = pais;
+    public void setNombre(String nombre) {
+        this.nombre = nombre;
     }
-    
+
+    public List<Localizacion> getLocalizacionList() {
+        return localizacionList;
+    }
+
+    public void setLocalizacionList(List<Localizacion> localizacionList) {
+        this.localizacionList = localizacionList;
+    }
+
+    @Override
+    public int hashCode() {
+        int hash = 0;
+        hash += (cod != null ? cod.hashCode() : 0);
+        return hash;
+    }
+
+    @Override
+    public boolean equals(Object object) {
+        // TODO: Warning - this method won't work in the case the id fields are not set
+        if (!(object instanceof Pais)) {
+            return false;
+        }
+        Pais other = (Pais) object;
+        if ((this.cod == null && other.cod != null) || (this.cod != null && !this.cod.equals(other.cod))) {
+            return false;
+        }
+        return true;
+    }
+
+    @Override
+    public String toString() {
+        return "model.Pais[ cod=" + cod + " ]";
+    }
     
 }

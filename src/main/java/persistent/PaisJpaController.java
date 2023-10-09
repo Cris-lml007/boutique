@@ -5,13 +5,15 @@
 package persistent;
 
 import java.io.Serializable;
-import java.util.List;
-import javax.persistence.EntityManager;
-import javax.persistence.EntityManagerFactory;
 import javax.persistence.Query;
 import javax.persistence.EntityNotFoundException;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Root;
+import model.Localizacion;
+import java.util.ArrayList;
+import java.util.List;
+import javax.persistence.EntityManager;
+import javax.persistence.EntityManagerFactory;
 import model.Pais;
 import persistent.exceptions.NonexistentEntityException;
 import persistent.exceptions.PreexistingEntityException;
@@ -32,11 +34,29 @@ public class PaisJpaController implements Serializable {
     }
 
     public void create(Pais pais) throws PreexistingEntityException, Exception {
+        if (pais.getLocalizacionList() == null) {
+            pais.setLocalizacionList(new ArrayList<Localizacion>());
+        }
         EntityManager em = null;
         try {
             em = getEntityManager();
             em.getTransaction().begin();
+            List<Localizacion> attachedLocalizacionList = new ArrayList<Localizacion>();
+            for (Localizacion localizacionListLocalizacionToAttach : pais.getLocalizacionList()) {
+                localizacionListLocalizacionToAttach = em.getReference(localizacionListLocalizacionToAttach.getClass(), localizacionListLocalizacionToAttach.getCod());
+                attachedLocalizacionList.add(localizacionListLocalizacionToAttach);
+            }
+            pais.setLocalizacionList(attachedLocalizacionList);
             em.persist(pais);
+            for (Localizacion localizacionListLocalizacion : pais.getLocalizacionList()) {
+                Pais oldPaisOfLocalizacionListLocalizacion = localizacionListLocalizacion.getPais();
+                localizacionListLocalizacion.setPais(pais);
+                localizacionListLocalizacion = em.merge(localizacionListLocalizacion);
+                if (oldPaisOfLocalizacionListLocalizacion != null) {
+                    oldPaisOfLocalizacionListLocalizacion.getLocalizacionList().remove(localizacionListLocalizacion);
+                    oldPaisOfLocalizacionListLocalizacion = em.merge(oldPaisOfLocalizacionListLocalizacion);
+                }
+            }
             em.getTransaction().commit();
         } catch (Exception ex) {
             if (findPais(pais.getCod()) != null) {
@@ -55,7 +75,34 @@ public class PaisJpaController implements Serializable {
         try {
             em = getEntityManager();
             em.getTransaction().begin();
+            Pais persistentPais = em.find(Pais.class, pais.getCod());
+            List<Localizacion> localizacionListOld = persistentPais.getLocalizacionList();
+            List<Localizacion> localizacionListNew = pais.getLocalizacionList();
+            List<Localizacion> attachedLocalizacionListNew = new ArrayList<Localizacion>();
+            for (Localizacion localizacionListNewLocalizacionToAttach : localizacionListNew) {
+                localizacionListNewLocalizacionToAttach = em.getReference(localizacionListNewLocalizacionToAttach.getClass(), localizacionListNewLocalizacionToAttach.getCod());
+                attachedLocalizacionListNew.add(localizacionListNewLocalizacionToAttach);
+            }
+            localizacionListNew = attachedLocalizacionListNew;
+            pais.setLocalizacionList(localizacionListNew);
             pais = em.merge(pais);
+            for (Localizacion localizacionListOldLocalizacion : localizacionListOld) {
+                if (!localizacionListNew.contains(localizacionListOldLocalizacion)) {
+                    localizacionListOldLocalizacion.setPais(null);
+                    localizacionListOldLocalizacion = em.merge(localizacionListOldLocalizacion);
+                }
+            }
+            for (Localizacion localizacionListNewLocalizacion : localizacionListNew) {
+                if (!localizacionListOld.contains(localizacionListNewLocalizacion)) {
+                    Pais oldPaisOfLocalizacionListNewLocalizacion = localizacionListNewLocalizacion.getPais();
+                    localizacionListNewLocalizacion.setPais(pais);
+                    localizacionListNewLocalizacion = em.merge(localizacionListNewLocalizacion);
+                    if (oldPaisOfLocalizacionListNewLocalizacion != null && !oldPaisOfLocalizacionListNewLocalizacion.equals(pais)) {
+                        oldPaisOfLocalizacionListNewLocalizacion.getLocalizacionList().remove(localizacionListNewLocalizacion);
+                        oldPaisOfLocalizacionListNewLocalizacion = em.merge(oldPaisOfLocalizacionListNewLocalizacion);
+                    }
+                }
+            }
             em.getTransaction().commit();
         } catch (Exception ex) {
             String msg = ex.getLocalizedMessage();
@@ -84,6 +131,11 @@ public class PaisJpaController implements Serializable {
                 pais.getCod();
             } catch (EntityNotFoundException enfe) {
                 throw new NonexistentEntityException("The pais with id " + id + " no longer exists.", enfe);
+            }
+            List<Localizacion> localizacionList = pais.getLocalizacionList();
+            for (Localizacion localizacionListLocalizacion : localizacionList) {
+                localizacionListLocalizacion.setPais(null);
+                localizacionListLocalizacion = em.merge(localizacionListLocalizacion);
             }
             em.remove(pais);
             em.getTransaction().commit();

@@ -6,12 +6,17 @@ package model;
 
 import java.io.Serializable;
 import java.util.Date;
+import java.util.List;
+import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
+import javax.persistence.FetchType;
 import javax.persistence.Id;
-import javax.persistence.OneToOne;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.NamedQueries;
+import javax.persistence.NamedQuery;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
@@ -21,45 +26,70 @@ import javax.persistence.TemporalType;
  * @author metallica
  */
 @Entity
-@Table(name = "subministro")
+@Table(name = "SUBMINISTRO", catalog = "boutique1", schema = "")
+@NamedQueries({
+    @NamedQuery(name = "Subministro.findAll", query = "SELECT s FROM Subministro s")})
 public class Subministro implements Serializable {
+
+    private static final long serialVersionUID = 1L;
     @Id
-    @Column(name = "cod")
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    private int cod;
-    @OneToOne
-    @Column(name = "empleado")
-    private Empleado empleado;
-    @OneToOne
-    @Column(name = "proveedor")
-    private Proveedor proveedor;
-    @OneToOne
-    @Column(name = "almacen")
-    private Almacen almacen;
-    @Column(name = "fecha")
+    @Basic(optional = false)
+    @Column(name = "COD", nullable = false)
+    private Integer cod;
+    @Column(name = "FECHA")
     @Temporal(TemporalType.DATE)
     private Date fecha;
-    @Column(name = "descripcion")
+    @Column(name = "DESCRIPCION", length = 255)
     private String descripcion;
+    @JoinColumn(name = "ALMACEN", referencedColumnName = "COD")
+    @ManyToOne(fetch = FetchType.LAZY)
+    private Almacen almacen;
+    @JoinColumn(name = "EMPLEADO", referencedColumnName = "CI")
+    @ManyToOne(fetch = FetchType.LAZY)
+    private Empleado empleado;
+    @JoinColumn(name = "PROVEEDOR", referencedColumnName = "COD")
+    @ManyToOne(fetch = FetchType.LAZY)
+    private Proveedor proveedor;
+    @OneToMany(mappedBy = "subministro", fetch = FetchType.LAZY)
+    private List<DetalleSub> detalleSubList;
 
     public Subministro() {
     }
 
-    public Subministro(int cod, Empleado empleado, Proveedor proveedor, Almacen almacen, Date fecha, String descripcion) {
+    public Subministro(Integer cod) {
         this.cod = cod;
-        this.empleado = empleado;
-        this.proveedor = proveedor;
-        this.almacen = almacen;
-        this.fecha = fecha;
-        this.descripcion = descripcion;
     }
 
-    public int getCod() {
+    public Integer getCod() {
         return cod;
     }
 
-    public void setCod(int cod) {
+    public void setCod(Integer cod) {
         this.cod = cod;
+    }
+
+    public Date getFecha() {
+        return fecha;
+    }
+
+    public void setFecha(Date fecha) {
+        this.fecha = fecha;
+    }
+
+    public String getDescripcion() {
+        return descripcion;
+    }
+
+    public void setDescripcion(String descripcion) {
+        this.descripcion = descripcion;
+    }
+
+    public Almacen getAlmacen() {
+        return almacen;
+    }
+
+    public void setAlmacen(Almacen almacen) {
+        this.almacen = almacen;
     }
 
     public Empleado getEmpleado() {
@@ -78,29 +108,37 @@ public class Subministro implements Serializable {
         this.proveedor = proveedor;
     }
 
-    public Almacen getAlmacen() {
-        return almacen;
+    public List<DetalleSub> getDetalleSubList() {
+        return detalleSubList;
     }
 
-    public void setAlmacen(Almacen almacen) {
-        this.almacen = almacen;
+    public void setDetalleSubList(List<DetalleSub> detalleSubList) {
+        this.detalleSubList = detalleSubList;
     }
 
-    public Date getFecha() {
-        return fecha;
+    @Override
+    public int hashCode() {
+        int hash = 0;
+        hash += (cod != null ? cod.hashCode() : 0);
+        return hash;
     }
 
-    public void setFecha(Date fecha) {
-        this.fecha = fecha;
+    @Override
+    public boolean equals(Object object) {
+        // TODO: Warning - this method won't work in the case the id fields are not set
+        if (!(object instanceof Subministro)) {
+            return false;
+        }
+        Subministro other = (Subministro) object;
+        if ((this.cod == null && other.cod != null) || (this.cod != null && !this.cod.equals(other.cod))) {
+            return false;
+        }
+        return true;
     }
 
-    public String getDescripcion() {
-        return descripcion;
+    @Override
+    public String toString() {
+        return "model.Subministro[ cod=" + cod + " ]";
     }
-
-    public void setDescripcion(String descripcion) {
-        this.descripcion = descripcion;
-    }
-    
     
 }

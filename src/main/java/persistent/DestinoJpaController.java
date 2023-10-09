@@ -5,15 +5,19 @@
 package persistent;
 
 import java.io.Serializable;
-import java.util.List;
-import javax.persistence.EntityManager;
-import javax.persistence.EntityManagerFactory;
 import javax.persistence.Query;
 import javax.persistence.EntityNotFoundException;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Root;
+import model.Localizacion;
+import model.Distribucion;
+import java.util.ArrayList;
+import java.util.List;
+import javax.persistence.EntityManager;
+import javax.persistence.EntityManagerFactory;
 import model.Destino;
 import persistent.exceptions.NonexistentEntityException;
+import persistent.exceptions.PreexistingEntityException;
 
 /**
  *
@@ -30,13 +34,45 @@ public class DestinoJpaController implements Serializable {
         return emf.createEntityManager();
     }
 
-    public void create(Destino destino) {
+    public void create(Destino destino) throws PreexistingEntityException, Exception {
+        if (destino.getDistribucionList() == null) {
+            destino.setDistribucionList(new ArrayList<Distribucion>());
+        }
         EntityManager em = null;
         try {
             em = getEntityManager();
             em.getTransaction().begin();
+            Localizacion origen = destino.getOrigen();
+            if (origen != null) {
+                origen = em.getReference(origen.getClass(), origen.getCod());
+                destino.setOrigen(origen);
+            }
+            List<Distribucion> attachedDistribucionList = new ArrayList<Distribucion>();
+            for (Distribucion distribucionListDistribucionToAttach : destino.getDistribucionList()) {
+                distribucionListDistribucionToAttach = em.getReference(distribucionListDistribucionToAttach.getClass(), distribucionListDistribucionToAttach.getId());
+                attachedDistribucionList.add(distribucionListDistribucionToAttach);
+            }
+            destino.setDistribucionList(attachedDistribucionList);
             em.persist(destino);
+            if (origen != null) {
+                origen.getDestinoList().add(destino);
+                origen = em.merge(origen);
+            }
+            for (Distribucion distribucionListDistribucion : destino.getDistribucionList()) {
+                Destino oldDestinoOfDistribucionListDistribucion = distribucionListDistribucion.getDestino();
+                distribucionListDistribucion.setDestino(destino);
+                distribucionListDistribucion = em.merge(distribucionListDistribucion);
+                if (oldDestinoOfDistribucionListDistribucion != null) {
+                    oldDestinoOfDistribucionListDistribucion.getDistribucionList().remove(distribucionListDistribucion);
+                    oldDestinoOfDistribucionListDistribucion = em.merge(oldDestinoOfDistribucionListDistribucion);
+                }
+            }
             em.getTransaction().commit();
+        } catch (Exception ex) {
+            if (findDestino(destino.getId()) != null) {
+                throw new PreexistingEntityException("Destino " + destino + " already exists.", ex);
+            }
+            throw ex;
         } finally {
             if (em != null) {
                 em.close();
@@ -49,12 +85,53 @@ public class DestinoJpaController implements Serializable {
         try {
             em = getEntityManager();
             em.getTransaction().begin();
+            Destino persistentDestino = em.find(Destino.class, destino.getId());
+            Localizacion origenOld = persistentDestino.getOrigen();
+            Localizacion origenNew = destino.getOrigen();
+            List<Distribucion> distribucionListOld = persistentDestino.getDistribucionList();
+            List<Distribucion> distribucionListNew = destino.getDistribucionList();
+            if (origenNew != null) {
+                origenNew = em.getReference(origenNew.getClass(), origenNew.getCod());
+                destino.setOrigen(origenNew);
+            }
+            List<Distribucion> attachedDistribucionListNew = new ArrayList<Distribucion>();
+            for (Distribucion distribucionListNewDistribucionToAttach : distribucionListNew) {
+                distribucionListNewDistribucionToAttach = em.getReference(distribucionListNewDistribucionToAttach.getClass(), distribucionListNewDistribucionToAttach.getId());
+                attachedDistribucionListNew.add(distribucionListNewDistribucionToAttach);
+            }
+            distribucionListNew = attachedDistribucionListNew;
+            destino.setDistribucionList(distribucionListNew);
             destino = em.merge(destino);
+            if (origenOld != null && !origenOld.equals(origenNew)) {
+                origenOld.getDestinoList().remove(destino);
+                origenOld = em.merge(origenOld);
+            }
+            if (origenNew != null && !origenNew.equals(origenOld)) {
+                origenNew.getDestinoList().add(destino);
+                origenNew = em.merge(origenNew);
+            }
+            for (Distribucion distribucionListOldDistribucion : distribucionListOld) {
+                if (!distribucionListNew.contains(distribucionListOldDistribucion)) {
+                    distribucionListOldDistribucion.setDestino(null);
+                    distribucionListOldDistribucion = em.merge(distribucionListOldDistribucion);
+                }
+            }
+            for (Distribucion distribucionListNewDistribucion : distribucionListNew) {
+                if (!distribucionListOld.contains(distribucionListNewDistribucion)) {
+                    Destino oldDestinoOfDistribucionListNewDistribucion = distribucionListNewDistribucion.getDestino();
+                    distribucionListNewDistribucion.setDestino(destino);
+                    distribucionListNewDistribucion = em.merge(distribucionListNewDistribucion);
+                    if (oldDestinoOfDistribucionListNewDistribucion != null && !oldDestinoOfDistribucionListNewDistribucion.equals(destino)) {
+                        oldDestinoOfDistribucionListNewDistribucion.getDistribucionList().remove(distribucionListNewDistribucion);
+                        oldDestinoOfDistribucionListNewDistribucion = em.merge(oldDestinoOfDistribucionListNewDistribucion);
+                    }
+                }
+            }
             em.getTransaction().commit();
         } catch (Exception ex) {
             String msg = ex.getLocalizedMessage();
             if (msg == null || msg.length() == 0) {
-                int id = destino.getId();
+                Integer id = destino.getId();
                 if (findDestino(id) == null) {
                     throw new NonexistentEntityException("The destino with id " + id + " no longer exists.");
                 }
@@ -67,7 +144,7 @@ public class DestinoJpaController implements Serializable {
         }
     }
 
-    public void destroy(int id) throws NonexistentEntityException {
+    public void destroy(Integer id) throws NonexistentEntityException {
         EntityManager em = null;
         try {
             em = getEntityManager();
@@ -78,6 +155,16 @@ public class DestinoJpaController implements Serializable {
                 destino.getId();
             } catch (EntityNotFoundException enfe) {
                 throw new NonexistentEntityException("The destino with id " + id + " no longer exists.", enfe);
+            }
+            Localizacion origen = destino.getOrigen();
+            if (origen != null) {
+                origen.getDestinoList().remove(destino);
+                origen = em.merge(origen);
+            }
+            List<Distribucion> distribucionList = destino.getDistribucionList();
+            for (Distribucion distribucionListDistribucion : distribucionList) {
+                distribucionListDistribucion.setDestino(null);
+                distribucionListDistribucion = em.merge(distribucionListDistribucion);
             }
             em.remove(destino);
             em.getTransaction().commit();
@@ -112,7 +199,7 @@ public class DestinoJpaController implements Serializable {
         }
     }
 
-    public Destino findDestino(int id) {
+    public Destino findDestino(Integer id) {
         EntityManager em = getEntityManager();
         try {
             return em.find(Destino.class, id);

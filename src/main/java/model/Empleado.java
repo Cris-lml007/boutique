@@ -5,46 +5,67 @@
 package model;
 
 import java.io.Serializable;
-import javax.persistence.*;
+import java.util.List;
+import javax.persistence.Basic;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.Id;
+import javax.persistence.NamedQueries;
+import javax.persistence.NamedQuery;
+import javax.persistence.OneToMany;
+import javax.persistence.Table;
 
 /**
  *
  * @author metallica
  */
-@Entity(name = "Empleado")
-@Table(name = "empleado")
+@Entity
+@Table(name = "EMPLEADO", catalog = "boutique1", schema = "")
+@NamedQueries({
+    @NamedQuery(name = "Empleado.findAll", query = "SELECT e FROM Empleado e")})
 public class Empleado implements Serializable {
+
+    private static final long serialVersionUID = 1L;
     @Id
-    @Column(name = "ci")
-    private int ci;
-    @Column(name = "apellido",nullable = false)
+    @Basic(optional = false)
+    @Column(name = "CI", nullable = false)
+    private Integer ci;
+    @Column(name = "APELLIDO", length = 30)
     private String apellido;
-    @Column(name = "nombre",nullable = false)
+    @Column(name = "NOMBRE", length = 30)
     private String nombre;
-    @Column(name = "rol",nullable = false)
-    private int rol;
-    @Column(name = "contraseña",nullable = true)
+    @Column(name = "ROL")
+    private Integer rol;
+    @Column(name = "CONTRASE\u00d1A", length = 32)
     private String contraseña;
-    @Column(name = "usuario",nullable = false,unique = true)
+    @Basic(optional = false)
+    @Column(name = "USUARIO", nullable = false, length = 30)
     private String usuario;
+    @OneToMany(mappedBy = "empleado", fetch = FetchType.LAZY)
+    private List<Subministro> subministroList;
+    @OneToMany(mappedBy = "empleado", fetch = FetchType.LAZY)
+    private List<Distribucion> distribucionList;
+    @OneToMany(mappedBy = "encargado", fetch = FetchType.LAZY)
+    private List<Distribucion> distribucionList1;
 
     public Empleado() {
     }
 
-    public Empleado(int ci, String apellido, String nombre, int rol, String contraseña, String usuario) {
+    public Empleado(Integer ci) {
         this.ci = ci;
-        this.apellido = apellido;
-        this.nombre = nombre;
-        this.rol = rol;
-        this.contraseña = contraseña;
+    }
+
+    public Empleado(Integer ci, String usuario) {
+        this.ci = ci;
         this.usuario = usuario;
     }
 
-    public int getCi() {
+    public Integer getCi() {
         return ci;
     }
 
-    public void setCi(int ci) {
+    public void setCi(Integer ci) {
         this.ci = ci;
     }
 
@@ -64,16 +85,21 @@ public class Empleado implements Serializable {
         this.nombre = nombre;
     }
 
-    public int getRol() {
+    public Integer getRol() {
         return rol;
     }
 
-    public void setRol(int rol) {
+    public void setRol(Integer rol) {
         this.rol = rol;
     }
 
     public void setContraseña(String contraseña) {
-        this.contraseña = contraseña;
+        
+        this.contraseña = md5.getMD5Hash(contraseña);
+    }
+    
+    public String getContraseña(){
+        return contraseña;
     }
 
     public String getUsuario() {
@@ -83,6 +109,54 @@ public class Empleado implements Serializable {
     public void setUsuario(String usuario) {
         this.usuario = usuario;
     }
-    
+
+    public List<Subministro> getSubministroList() {
+        return subministroList;
+    }
+
+    public void setSubministroList(List<Subministro> subministroList) {
+        this.subministroList = subministroList;
+    }
+
+    public List<Distribucion> getDistribucionList() {
+        return distribucionList;
+    }
+
+    public void setDistribucionList(List<Distribucion> distribucionList) {
+        this.distribucionList = distribucionList;
+    }
+
+    public List<Distribucion> getDistribucionList1() {
+        return distribucionList1;
+    }
+
+    public void setDistribucionList1(List<Distribucion> distribucionList1) {
+        this.distribucionList1 = distribucionList1;
+    }
+
+    @Override
+    public int hashCode() {
+        int hash = 0;
+        hash += (ci != null ? ci.hashCode() : 0);
+        return hash;
+    }
+
+    @Override
+    public boolean equals(Object object) {
+        // TODO: Warning - this method won't work in the case the id fields are not set
+        if (!(object instanceof Empleado)) {
+            return false;
+        }
+        Empleado other = (Empleado) object;
+        if ((this.ci == null && other.ci != null) || (this.ci != null && !this.ci.equals(other.ci))) {
+            return false;
+        }
+        return true;
+    }
+
+    @Override
+    public String toString() {
+        return "model.Empleado[ ci=" + ci + " ]";
+    }
     
 }

@@ -5,15 +5,19 @@
 package persistent;
 
 import java.io.Serializable;
-import java.util.List;
-import javax.persistence.EntityManager;
-import javax.persistence.EntityManagerFactory;
 import javax.persistence.Query;
 import javax.persistence.EntityNotFoundException;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Root;
+import model.Localizacion;
+import model.Subministro;
+import java.util.ArrayList;
+import java.util.List;
+import javax.persistence.EntityManager;
+import javax.persistence.EntityManagerFactory;
 import model.Almacen;
 import persistent.exceptions.NonexistentEntityException;
+import persistent.exceptions.PreexistingEntityException;
 
 /**
  *
@@ -30,13 +34,45 @@ public class AlmacenJpaController implements Serializable {
         return emf.createEntityManager();
     }
 
-    public void create(Almacen almacen) {
+    public void create(Almacen almacen) throws PreexistingEntityException, Exception {
+        if (almacen.getSubministroList() == null) {
+            almacen.setSubministroList(new ArrayList<Subministro>());
+        }
         EntityManager em = null;
         try {
             em = getEntityManager();
             em.getTransaction().begin();
+            Localizacion origen = almacen.getOrigen();
+            if (origen != null) {
+                origen = em.getReference(origen.getClass(), origen.getCod());
+                almacen.setOrigen(origen);
+            }
+            List<Subministro> attachedSubministroList = new ArrayList<Subministro>();
+            for (Subministro subministroListSubministroToAttach : almacen.getSubministroList()) {
+                subministroListSubministroToAttach = em.getReference(subministroListSubministroToAttach.getClass(), subministroListSubministroToAttach.getCod());
+                attachedSubministroList.add(subministroListSubministroToAttach);
+            }
+            almacen.setSubministroList(attachedSubministroList);
             em.persist(almacen);
+            if (origen != null) {
+                origen.getAlmacenList().add(almacen);
+                origen = em.merge(origen);
+            }
+            for (Subministro subministroListSubministro : almacen.getSubministroList()) {
+                Almacen oldAlmacenOfSubministroListSubministro = subministroListSubministro.getAlmacen();
+                subministroListSubministro.setAlmacen(almacen);
+                subministroListSubministro = em.merge(subministroListSubministro);
+                if (oldAlmacenOfSubministroListSubministro != null) {
+                    oldAlmacenOfSubministroListSubministro.getSubministroList().remove(subministroListSubministro);
+                    oldAlmacenOfSubministroListSubministro = em.merge(oldAlmacenOfSubministroListSubministro);
+                }
+            }
             em.getTransaction().commit();
+        } catch (Exception ex) {
+            if (findAlmacen(almacen.getCod()) != null) {
+                throw new PreexistingEntityException("Almacen " + almacen + " already exists.", ex);
+            }
+            throw ex;
         } finally {
             if (em != null) {
                 em.close();
@@ -49,12 +85,53 @@ public class AlmacenJpaController implements Serializable {
         try {
             em = getEntityManager();
             em.getTransaction().begin();
+            Almacen persistentAlmacen = em.find(Almacen.class, almacen.getCod());
+            Localizacion origenOld = persistentAlmacen.getOrigen();
+            Localizacion origenNew = almacen.getOrigen();
+            List<Subministro> subministroListOld = persistentAlmacen.getSubministroList();
+            List<Subministro> subministroListNew = almacen.getSubministroList();
+            if (origenNew != null) {
+                origenNew = em.getReference(origenNew.getClass(), origenNew.getCod());
+                almacen.setOrigen(origenNew);
+            }
+            List<Subministro> attachedSubministroListNew = new ArrayList<Subministro>();
+            for (Subministro subministroListNewSubministroToAttach : subministroListNew) {
+                subministroListNewSubministroToAttach = em.getReference(subministroListNewSubministroToAttach.getClass(), subministroListNewSubministroToAttach.getCod());
+                attachedSubministroListNew.add(subministroListNewSubministroToAttach);
+            }
+            subministroListNew = attachedSubministroListNew;
+            almacen.setSubministroList(subministroListNew);
             almacen = em.merge(almacen);
+            if (origenOld != null && !origenOld.equals(origenNew)) {
+                origenOld.getAlmacenList().remove(almacen);
+                origenOld = em.merge(origenOld);
+            }
+            if (origenNew != null && !origenNew.equals(origenOld)) {
+                origenNew.getAlmacenList().add(almacen);
+                origenNew = em.merge(origenNew);
+            }
+            for (Subministro subministroListOldSubministro : subministroListOld) {
+                if (!subministroListNew.contains(subministroListOldSubministro)) {
+                    subministroListOldSubministro.setAlmacen(null);
+                    subministroListOldSubministro = em.merge(subministroListOldSubministro);
+                }
+            }
+            for (Subministro subministroListNewSubministro : subministroListNew) {
+                if (!subministroListOld.contains(subministroListNewSubministro)) {
+                    Almacen oldAlmacenOfSubministroListNewSubministro = subministroListNewSubministro.getAlmacen();
+                    subministroListNewSubministro.setAlmacen(almacen);
+                    subministroListNewSubministro = em.merge(subministroListNewSubministro);
+                    if (oldAlmacenOfSubministroListNewSubministro != null && !oldAlmacenOfSubministroListNewSubministro.equals(almacen)) {
+                        oldAlmacenOfSubministroListNewSubministro.getSubministroList().remove(subministroListNewSubministro);
+                        oldAlmacenOfSubministroListNewSubministro = em.merge(oldAlmacenOfSubministroListNewSubministro);
+                    }
+                }
+            }
             em.getTransaction().commit();
         } catch (Exception ex) {
             String msg = ex.getLocalizedMessage();
             if (msg == null || msg.length() == 0) {
-                int id = almacen.getCod();
+                Integer id = almacen.getCod();
                 if (findAlmacen(id) == null) {
                     throw new NonexistentEntityException("The almacen with id " + id + " no longer exists.");
                 }
@@ -67,7 +144,7 @@ public class AlmacenJpaController implements Serializable {
         }
     }
 
-    public void destroy(int id) throws NonexistentEntityException {
+    public void destroy(Integer id) throws NonexistentEntityException {
         EntityManager em = null;
         try {
             em = getEntityManager();
@@ -78,6 +155,16 @@ public class AlmacenJpaController implements Serializable {
                 almacen.getCod();
             } catch (EntityNotFoundException enfe) {
                 throw new NonexistentEntityException("The almacen with id " + id + " no longer exists.", enfe);
+            }
+            Localizacion origen = almacen.getOrigen();
+            if (origen != null) {
+                origen.getAlmacenList().remove(almacen);
+                origen = em.merge(origen);
+            }
+            List<Subministro> subministroList = almacen.getSubministroList();
+            for (Subministro subministroListSubministro : subministroList) {
+                subministroListSubministro.setAlmacen(null);
+                subministroListSubministro = em.merge(subministroListSubministro);
             }
             em.remove(almacen);
             em.getTransaction().commit();
@@ -112,7 +199,7 @@ public class AlmacenJpaController implements Serializable {
         }
     }
 
-    public Almacen findAlmacen(int id) {
+    public Almacen findAlmacen(Integer id) {
         EntityManager em = getEntityManager();
         try {
             return em.find(Almacen.class, id);

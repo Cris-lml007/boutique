@@ -1,20 +1,20 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <persistence version="2.1" xmlns="http://xmlns.jcp.org/xml/ns/persistence" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/persistence http://xmlns.jcp.org/xml/ns/persistence/persistence_2_1.xsd">
-  <persistence-unit name="JPA" transaction-type="RESOURCE_LOCAL">
+  <persistence-unit name="JpaBoutique" transaction-type="RESOURCE_LOCAL">
     <provider>org.eclipse.persistence.jpa.PersistenceProvider</provider>
-    <class>model.Almacen</class>
     <class>model.Destino</class>
-    <class>model.DetalleDistribucion</class>
-    <class>model.DetalleSubministro</class>
-    <class>model.Distribucion</class>
-    <class>model.Empleado</class>
     <class>model.Item</class>
+    <class>model.Empleado</class>
     <class>model.Localizacion</class>
-    <class>model.Pais</class>
+    <class>model.DetalleSub</class>
+    <class>model.Almacen</class>
     <class>model.Proveedor</class>
     <class>model.Subministro</class>
+    <class>model.DetalleDis</class>
+    <class>model.Distribucion</class>
+    <class>model.Pais</class>
     <properties>
-      <property name="javax.persistence.jdbc.url" value="jdbc:mysql://localhost:3306/boutique?serverTimezone=UTC"/>
+      <property name="javax.persistence.jdbc.url" value="jdbc:mysql://localhost:3306/boutique1?serverTimezone=UTC"/>
       <property name="javax.persistence.jdbc.user" value="root"/>
       <property name="javax.persistence.jdbc.driver" value="com.mysql.cj.jdbc.Driver"/>
       <property name="javax.persistence.jdbc.password" value=""/>

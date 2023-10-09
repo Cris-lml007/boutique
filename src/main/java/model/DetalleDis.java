@@ -5,7 +5,6 @@
 package model;
 
 import java.io.Serializable;
-import java.util.List;
 import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -15,7 +14,6 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
-import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
 /**
@@ -23,30 +21,29 @@ import javax.persistence.Table;
  * @author metallica
  */
 @Entity
-@Table(name = "DESTINO", catalog = "boutique1", schema = "")
+@Table(name = "DETALLE_DIS", catalog = "boutique1", schema = "")
 @NamedQueries({
-    @NamedQuery(name = "Destino.findAll", query = "SELECT d FROM Destino d")})
-public class Destino implements Serializable {
+    @NamedQuery(name = "DetalleDis.findAll", query = "SELECT d FROM DetalleDis d")})
+public class DetalleDis implements Serializable {
 
     private static final long serialVersionUID = 1L;
     @Id
     @Basic(optional = false)
     @Column(name = "ID", nullable = false)
     private Integer id;
-    @Column(name = "NOMBRE", length = 60)
-    private String nombre;
-    @Column(name = "TIPO")
-    private Integer tipo;
-    @JoinColumn(name = "ORIGEN", referencedColumnName = "COD")
+    @Column(name = "CANTIDAD")
+    private Integer cantidad;
+    @JoinColumn(name = "DISTRIBUCION", referencedColumnName = "ID")
     @ManyToOne(fetch = FetchType.LAZY)
-    private Localizacion origen;
-    @OneToMany(mappedBy = "destino", fetch = FetchType.LAZY)
-    private List<Distribucion> distribucionList;
+    private Distribucion distribucion;
+    @JoinColumn(name = "PRODUCTO", referencedColumnName = "COD")
+    @ManyToOne(fetch = FetchType.LAZY)
+    private Item producto;
 
-    public Destino() {
+    public DetalleDis() {
     }
 
-    public Destino(Integer id) {
+    public DetalleDis(Integer id) {
         this.id = id;
     }
 
@@ -58,36 +55,28 @@ public class Destino implements Serializable {
         this.id = id;
     }
 
-    public String getNombre() {
-        return nombre;
+    public Integer getCantidad() {
+        return cantidad;
     }
 
-    public void setNombre(String nombre) {
-        this.nombre = nombre;
+    public void setCantidad(Integer cantidad) {
+        this.cantidad = cantidad;
     }
 
-    public Integer getTipo() {
-        return tipo;
+    public Distribucion getDistribucion() {
+        return distribucion;
     }
 
-    public void setTipo(Integer tipo) {
-        this.tipo = tipo;
+    public void setDistribucion(Distribucion distribucion) {
+        this.distribucion = distribucion;
     }
 
-    public Localizacion getOrigen() {
-        return origen;
+    public Item getProducto() {
+        return producto;
     }
 
-    public void setOrigen(Localizacion origen) {
-        this.origen = origen;
-    }
-
-    public List<Distribucion> getDistribucionList() {
-        return distribucionList;
-    }
-
-    public void setDistribucionList(List<Distribucion> distribucionList) {
-        this.distribucionList = distribucionList;
+    public void setProducto(Item producto) {
+        this.producto = producto;
     }
 
     @Override
@@ -100,10 +89,10 @@ public class Destino implements Serializable {
     @Override
     public boolean equals(Object object) {
         // TODO: Warning - this method won't work in the case the id fields are not set
-        if (!(object instanceof Destino)) {
+        if (!(object instanceof DetalleDis)) {
             return false;
         }
-        Destino other = (Destino) object;
+        DetalleDis other = (DetalleDis) object;
         if ((this.id == null && other.id != null) || (this.id != null && !this.id.equals(other.id))) {
             return false;
         }
@@ -112,7 +101,7 @@ public class Destino implements Serializable {
 
     @Override
     public String toString() {
-        return "model.Destino[ id=" + id + " ]";
+        return "model.DetalleDis[ id=" + id + " ]";
     }
     
 }

@@ -9,7 +9,7 @@ import javax.persistence.Query;
 import javax.persistence.EntityNotFoundException;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Root;
-import model.Destino;
+import model.ProveedorDistribuidor;
 import model.Empleado;
 import model.DetalleDis;
 import java.util.ArrayList;
@@ -43,9 +43,9 @@ public class DistribucionJpaController implements Serializable {
         try {
             em = getEntityManager();
             em.getTransaction().begin();
-            Destino destino = distribucion.getDestino();
+            ProveedorDistribuidor destino = distribucion.getDestino();
             if (destino != null) {
-                destino = em.getReference(destino.getClass(), destino.getId());
+                destino = em.getReference(destino.getClass(), destino.getCod());
                 distribucion.setDestino(destino);
             }
             Empleado empleado = distribucion.getEmpleado();
@@ -105,8 +105,8 @@ public class DistribucionJpaController implements Serializable {
             em = getEntityManager();
             em.getTransaction().begin();
             Distribucion persistentDistribucion = em.find(Distribucion.class, distribucion.getId());
-            Destino destinoOld = persistentDistribucion.getDestino();
-            Destino destinoNew = distribucion.getDestino();
+            ProveedorDistribuidor destinoOld = persistentDistribucion.getDestino();
+            ProveedorDistribuidor destinoNew = distribucion.getDestino();
             Empleado empleadoOld = persistentDistribucion.getEmpleado();
             Empleado empleadoNew = distribucion.getEmpleado();
             Empleado encargadoOld = persistentDistribucion.getEncargado();
@@ -114,7 +114,7 @@ public class DistribucionJpaController implements Serializable {
             List<DetalleDis> detalleDisListOld = persistentDistribucion.getDetalleDisList();
             List<DetalleDis> detalleDisListNew = distribucion.getDetalleDisList();
             if (destinoNew != null) {
-                destinoNew = em.getReference(destinoNew.getClass(), destinoNew.getId());
+                destinoNew = em.getReference(destinoNew.getClass(), destinoNew.getCod());
                 distribucion.setDestino(destinoNew);
             }
             if (empleadoNew != null) {
@@ -203,7 +203,7 @@ public class DistribucionJpaController implements Serializable {
             } catch (EntityNotFoundException enfe) {
                 throw new NonexistentEntityException("The distribucion with id " + id + " no longer exists.", enfe);
             }
-            Destino destino = distribucion.getDestino();
+            ProveedorDistribuidor destino = distribucion.getDestino();
             if (destino != null) {
                 destino.getDistribucionList().remove(distribucion);
                 destino = em.merge(destino);

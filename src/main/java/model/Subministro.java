@@ -26,9 +26,12 @@ import javax.persistence.TemporalType;
  * @author metallica
  */
 @Entity
-@Table(name = "SUBMINISTRO", catalog = "boutique1", schema = "")
+@Table(name = "SUBMINISTRO", catalog = "boutique", schema = "")
 @NamedQueries({
-    @NamedQuery(name = "Subministro.findAll", query = "SELECT s FROM Subministro s")})
+    @NamedQuery(name = "Subministro.findAll", query = "SELECT s FROM Subministro s"),
+    @NamedQuery(name = "Subministro.findByCod", query = "SELECT s FROM Subministro s WHERE s.cod = :cod"),
+    @NamedQuery(name = "Subministro.findByFecha", query = "SELECT s FROM Subministro s WHERE s.fecha = :fecha"),
+    @NamedQuery(name = "Subministro.findByDescripcion", query = "SELECT s FROM Subministro s WHERE s.descripcion = :descripcion")})
 public class Subministro implements Serializable {
 
     private static final long serialVersionUID = 1L;
@@ -36,7 +39,8 @@ public class Subministro implements Serializable {
     @Basic(optional = false)
     @Column(name = "COD", nullable = false)
     private Integer cod;
-    @Column(name = "FECHA")
+    @Basic(optional = false)
+    @Column(name = "FECHA", nullable = false)
     @Temporal(TemporalType.DATE)
     private Date fecha;
     @Column(name = "DESCRIPCION", length = 255)
@@ -49,7 +53,7 @@ public class Subministro implements Serializable {
     private Empleado empleado;
     @JoinColumn(name = "PROVEEDOR", referencedColumnName = "COD")
     @ManyToOne(fetch = FetchType.LAZY)
-    private Proveedor proveedor;
+    private ProveedorDistribuidor proveedor;
     @OneToMany(mappedBy = "subministro", fetch = FetchType.LAZY)
     private List<DetalleSub> detalleSubList;
 
@@ -58,6 +62,11 @@ public class Subministro implements Serializable {
 
     public Subministro(Integer cod) {
         this.cod = cod;
+    }
+
+    public Subministro(Integer cod, Date fecha) {
+        this.cod = cod;
+        this.fecha = fecha;
     }
 
     public Integer getCod() {
@@ -100,11 +109,11 @@ public class Subministro implements Serializable {
         this.empleado = empleado;
     }
 
-    public Proveedor getProveedor() {
+    public ProveedorDistribuidor getProveedor() {
         return proveedor;
     }
 
-    public void setProveedor(Proveedor proveedor) {
+    public void setProveedor(ProveedorDistribuidor proveedor) {
         this.proveedor = proveedor;
     }
 

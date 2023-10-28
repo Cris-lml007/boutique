@@ -17,6 +17,7 @@ import javax.persistence.EntityManagerFactory;
 import javax.persistence.Persistence;
 import model.Distribucion;
 import model.Empleado;
+import model.Rol;
 import model.md5;
 import persistent.exceptions.NonexistentEntityException;
 import persistent.exceptions.PreexistingEntityException;
@@ -297,9 +298,11 @@ public class EmpleadoJpaController implements Serializable {
         EntityManager em=getEntityManager();
         List<Empleado> emp=new ArrayList<>();
         try{
-            Query query=em.createQuery("SELECT u FROM Empleado u WHERE u.usuario = :us AND u.contraseña = :pass");
+            Query query=em.createQuery("SELECT u FROM Empleado u WHERE u.usuario = :us AND u.contraseña = :pass AND u.rol IN ( :rol1 , :rol2)");
             query.setParameter("us", usuario);
             query.setParameter("pass", md5.getMD5Hash(contraseña));
+            query.setParameter("rol1", Rol.administrativo);
+            query.setParameter("rol2", Rol.gerente);
             emp=query.getResultList();
         }finally{
             return (!emp.isEmpty() ? emp.get(0) : null);

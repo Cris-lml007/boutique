@@ -4,6 +4,9 @@
  */
 package view;
 
+import com.formdev.flatlaf.intellijthemes.FlatArcIJTheme;
+import com.formdev.flatlaf.intellijthemes.FlatDarkPurpleIJTheme;
+
 /**
  *
  * @author USUARIO
@@ -15,6 +18,13 @@ public class VIstaLogin extends javax.swing.JFrame {
      */
     public VIstaLogin() {
         initComponents();
+        try{
+            //FlatArcIJTheme.setup();
+            System.out.println("hola");
+            FlatDarkPurpleIJTheme.setup();
+        }catch(Exception e){
+            System.out.println(e);
+        }
     }
 
     /**
@@ -131,7 +141,13 @@ public class VIstaLogin extends javax.swing.JFrame {
             java.util.logging.Logger.getLogger(VIstaLogin.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         }
         //</editor-fold>
-
+        try{
+            //FlatArcIJTheme.setup();
+            System.out.println("hola");
+            FlatDarkPurpleIJTheme.setup();
+        }catch(Exception e){
+            System.out.println(e);
+        }
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {

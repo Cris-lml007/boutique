@@ -5,6 +5,7 @@
 package model;
 
 import java.io.Serializable;
+import java.util.Date;
 import java.util.List;
 import javax.persistence.Basic;
 import javax.persistence.Column;
@@ -17,15 +18,20 @@ import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
 
 /**
  *
  * @author metallica
  */
 @Entity
-@Table(name = "DISTRIBUCION", catalog = "boutique1", schema = "")
+@Table(name = "DISTRIBUCION", catalog = "boutique", schema = "")
 @NamedQueries({
-    @NamedQuery(name = "Distribucion.findAll", query = "SELECT d FROM Distribucion d")})
+    @NamedQuery(name = "Distribucion.findAll", query = "SELECT d FROM Distribucion d"),
+    @NamedQuery(name = "Distribucion.findById", query = "SELECT d FROM Distribucion d WHERE d.id = :id"),
+    @NamedQuery(name = "Distribucion.findByFecha", query = "SELECT d FROM Distribucion d WHERE d.fecha = :fecha"),
+    @NamedQuery(name = "Distribucion.findByDescripcion", query = "SELECT d FROM Distribucion d WHERE d.descripcion = :descripcion")})
 public class Distribucion implements Serializable {
 
     private static final long serialVersionUID = 1L;
@@ -33,13 +39,17 @@ public class Distribucion implements Serializable {
     @Basic(optional = false)
     @Column(name = "ID", nullable = false)
     private Integer id;
+    @Basic(optional = false)
+    @Column(name = "FECHA", nullable = false)
+    @Temporal(TemporalType.DATE)
+    private Date fecha;
     @Column(name = "DESCRIPCION", length = 255)
     private String descripcion;
     @OneToMany(mappedBy = "distribucion", fetch = FetchType.LAZY)
     private List<DetalleDis> detalleDisList;
-    @JoinColumn(name = "DESTINO", referencedColumnName = "ID")
+    @JoinColumn(name = "DESTINO", referencedColumnName = "COD")
     @ManyToOne(fetch = FetchType.LAZY)
-    private Destino destino;
+    private ProveedorDistribuidor destino;
     @JoinColumn(name = "EMPLEADO", referencedColumnName = "CI")
     @ManyToOne(fetch = FetchType.LAZY)
     private Empleado empleado;
@@ -54,12 +64,25 @@ public class Distribucion implements Serializable {
         this.id = id;
     }
 
+    public Distribucion(Integer id, Date fecha) {
+        this.id = id;
+        this.fecha = fecha;
+    }
+
     public Integer getId() {
         return id;
     }
 
     public void setId(Integer id) {
         this.id = id;
+    }
+
+    public Date getFecha() {
+        return fecha;
+    }
+
+    public void setFecha(Date fecha) {
+        this.fecha = fecha;
     }
 
     public String getDescripcion() {
@@ -78,11 +101,11 @@ public class Distribucion implements Serializable {
         this.detalleDisList = detalleDisList;
     }
 
-    public Destino getDestino() {
+    public ProveedorDistribuidor getDestino() {
         return destino;
     }
 
-    public void setDestino(Destino destino) {
+    public void setDestino(ProveedorDistribuidor destino) {
         this.destino = destino;
     }
 

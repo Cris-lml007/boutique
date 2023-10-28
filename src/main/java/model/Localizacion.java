@@ -23,9 +23,11 @@ import javax.persistence.Table;
  * @author metallica
  */
 @Entity
-@Table(name = "LOCALIZACION", catalog = "boutique1", schema = "")
+@Table(name = "LOCALIZACION", catalog = "boutique", schema = "")
 @NamedQueries({
-    @NamedQuery(name = "Localizacion.findAll", query = "SELECT l FROM Localizacion l")})
+    @NamedQuery(name = "Localizacion.findAll", query = "SELECT l FROM Localizacion l"),
+    @NamedQuery(name = "Localizacion.findByCod", query = "SELECT l FROM Localizacion l WHERE l.cod = :cod"),
+    @NamedQuery(name = "Localizacion.findByCiudad", query = "SELECT l FROM Localizacion l WHERE l.ciudad = :ciudad")})
 public class Localizacion implements Serializable {
 
     private static final long serialVersionUID = 1L;
@@ -35,15 +37,13 @@ public class Localizacion implements Serializable {
     private String cod;
     @Column(name = "CIUDAD", length = 60)
     private String ciudad;
-    @OneToMany(mappedBy = "origen", fetch = FetchType.LAZY)
-    private List<Proveedor> proveedorList;
-    @OneToMany(mappedBy = "origen", fetch = FetchType.LAZY)
-    private List<Destino> destinoList;
     @JoinColumn(name = "PAIS", referencedColumnName = "COD")
     @ManyToOne(fetch = FetchType.LAZY)
     private Pais pais;
     @OneToMany(mappedBy = "origen", fetch = FetchType.LAZY)
     private List<Almacen> almacenList;
+    @OneToMany(mappedBy = "origen", fetch = FetchType.LAZY)
+    private List<ProveedorDistribuidor> proveedorDistribuidorList;
 
     public Localizacion() {
     }
@@ -68,22 +68,6 @@ public class Localizacion implements Serializable {
         this.ciudad = ciudad;
     }
 
-    public List<Proveedor> getProveedorList() {
-        return proveedorList;
-    }
-
-    public void setProveedorList(List<Proveedor> proveedorList) {
-        this.proveedorList = proveedorList;
-    }
-
-    public List<Destino> getDestinoList() {
-        return destinoList;
-    }
-
-    public void setDestinoList(List<Destino> destinoList) {
-        this.destinoList = destinoList;
-    }
-
     public Pais getPais() {
         return pais;
     }
@@ -98,6 +82,14 @@ public class Localizacion implements Serializable {
 
     public void setAlmacenList(List<Almacen> almacenList) {
         this.almacenList = almacenList;
+    }
+
+    public List<ProveedorDistribuidor> getProveedorDistribuidorList() {
+        return proveedorDistribuidorList;
+    }
+
+    public void setProveedorDistribuidorList(List<ProveedorDistribuidor> proveedorDistribuidorList) {
+        this.proveedorDistribuidorList = proveedorDistribuidorList;
     }
 
     @Override

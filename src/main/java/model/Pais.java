@@ -21,9 +21,11 @@ import javax.persistence.Table;
  * @author metallica
  */
 @Entity
-@Table(name = "PAIS", catalog = "boutique1", schema = "")
+@Table(name = "PAIS", catalog = "boutique", schema = "")
 @NamedQueries({
-    @NamedQuery(name = "Pais.findAll", query = "SELECT p FROM Pais p")})
+    @NamedQuery(name = "Pais.findAll", query = "SELECT p FROM Pais p"),
+    @NamedQuery(name = "Pais.findByCod", query = "SELECT p FROM Pais p WHERE p.cod = :cod"),
+    @NamedQuery(name = "Pais.findByNombre", query = "SELECT p FROM Pais p WHERE p.nombre = :nombre")})
 public class Pais implements Serializable {
 
     private static final long serialVersionUID = 1L;

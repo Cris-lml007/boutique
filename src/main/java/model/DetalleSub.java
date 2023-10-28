@@ -22,9 +22,13 @@ import javax.persistence.Table;
  * @author metallica
  */
 @Entity
-@Table(name = "DETALLE_SUB", catalog = "boutique1", schema = "")
+@Table(name = "DETALLE_SUB", catalog = "boutique", schema = "")
 @NamedQueries({
-    @NamedQuery(name = "DetalleSub.findAll", query = "SELECT d FROM DetalleSub d")})
+    @NamedQuery(name = "DetalleSub.findAll", query = "SELECT d FROM DetalleSub d"),
+    @NamedQuery(name = "DetalleSub.findById", query = "SELECT d FROM DetalleSub d WHERE d.id = :id"),
+    @NamedQuery(name = "DetalleSub.findByPrecio", query = "SELECT d FROM DetalleSub d WHERE d.precio = :precio"),
+    @NamedQuery(name = "DetalleSub.findByCantidad", query = "SELECT d FROM DetalleSub d WHERE d.cantidad = :cantidad"),
+    @NamedQuery(name = "DetalleSub.findByCantExis", query = "SELECT d FROM DetalleSub d WHERE d.cantExis = :cantExis")})
 public class DetalleSub implements Serializable {
 
     private static final long serialVersionUID = 1L;

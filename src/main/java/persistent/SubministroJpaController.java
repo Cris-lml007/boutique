@@ -11,7 +11,7 @@ import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Root;
 import model.Almacen;
 import model.Empleado;
-import model.Proveedor;
+import model.ProveedorDistribuidor;
 import model.DetalleSub;
 import java.util.ArrayList;
 import java.util.List;
@@ -54,7 +54,7 @@ public class SubministroJpaController implements Serializable {
                 empleado = em.getReference(empleado.getClass(), empleado.getCi());
                 subministro.setEmpleado(empleado);
             }
-            Proveedor proveedor = subministro.getProveedor();
+            ProveedorDistribuidor proveedor = subministro.getProveedor();
             if (proveedor != null) {
                 proveedor = em.getReference(proveedor.getClass(), proveedor.getCod());
                 subministro.setProveedor(proveedor);
@@ -110,8 +110,8 @@ public class SubministroJpaController implements Serializable {
             Almacen almacenNew = subministro.getAlmacen();
             Empleado empleadoOld = persistentSubministro.getEmpleado();
             Empleado empleadoNew = subministro.getEmpleado();
-            Proveedor proveedorOld = persistentSubministro.getProveedor();
-            Proveedor proveedorNew = subministro.getProveedor();
+            ProveedorDistribuidor proveedorOld = persistentSubministro.getProveedor();
+            ProveedorDistribuidor proveedorNew = subministro.getProveedor();
             List<DetalleSub> detalleSubListOld = persistentSubministro.getDetalleSubList();
             List<DetalleSub> detalleSubListNew = subministro.getDetalleSubList();
             if (almacenNew != null) {
@@ -214,7 +214,7 @@ public class SubministroJpaController implements Serializable {
                 empleado.getSubministroList().remove(subministro);
                 empleado = em.merge(empleado);
             }
-            Proveedor proveedor = subministro.getProveedor();
+            ProveedorDistribuidor proveedor = subministro.getProveedor();
             if (proveedor != null) {
                 proveedor.getSubministroList().remove(subministro);
                 proveedor = em.merge(proveedor);

@@ -7,6 +7,9 @@ package persistent;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.Persistence;
+import model.Almacen;
+import model.Empleado;
+import model.Rol;
 
 /**
  *
@@ -15,7 +18,7 @@ import javax.persistence.Persistence;
 public class Control {
     public EntityManagerFactory conexion;
     public AlmacenJpaController almacen;
-    public DestinoJpaController destino;
+    //public DestinoJpaController destino;
     public DetalleDisJpaController detalleDistribucion;
     public DetalleSubJpaController detalleSubministro;
     public DistribucionJpaController distribucion;
@@ -23,13 +26,13 @@ public class Control {
     public ItemJpaController item;
     public LocalizacionJpaController localizacion;
     public PaisJpaController pais;
-    public ProveedorJpaController proveedor;
+    //public ProveedorJpaController proveedor;
     public SubministroJpaController subministro;
+    public ProveedorDistribuidorJpaController proveedorDis;
 
     public Control() {
         conexion=Persistence.createEntityManagerFactory("JpaBoutique");
         almacen=new AlmacenJpaController(conexion);
-        destino=new DestinoJpaController(conexion);
         detalleDistribucion=new DetalleDisJpaController(conexion);
         detalleSubministro=new DetalleSubJpaController(conexion);
         distribucion=new DistribucionJpaController(conexion);
@@ -37,9 +40,27 @@ public class Control {
         item=new ItemJpaController(conexion);
         localizacion=new LocalizacionJpaController(conexion);
         pais=new PaisJpaController(conexion);
-        proveedor=new ProveedorJpaController(conexion);
         subministro=new SubministroJpaController(conexion);
+        proveedorDis=new ProveedorDistribuidorJpaController(conexion);
     }        
     
-    
+    public static void main(String args []){
+        Control a= new Control();
+        /*Empleado q=new Empleado(7329034,"Abalos","Cristian",Rol.gerente);
+        q.setUsuario("cris");
+        q.setContraseña("12345");
+        try{
+            a.empleado.create(q);
+        }catch(Exception e){
+            System.out.println("error "+e);
+        }
+        q=a.empleado.findEmpleado(7328034);*/
+        Empleado q=a.empleado.login("cris", "12345");
+        if(q==null) System.out.println("error");
+        else{
+            System.out.println("mmmm...parece que funciono");
+            System.out.println(q.getRol());
+        }
+        
+    }
 }

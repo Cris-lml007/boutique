@@ -9,6 +9,8 @@ import java.util.List;
 import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.FetchType;
 import javax.persistence.Id;
 import javax.persistence.NamedQueries;
@@ -21,9 +23,15 @@ import javax.persistence.Table;
  * @author metallica
  */
 @Entity
-@Table(name = "EMPLEADO", catalog = "boutique1", schema = "")
+@Table(name = "EMPLEADO", catalog = "boutique", schema = "")
 @NamedQueries({
-    @NamedQuery(name = "Empleado.findAll", query = "SELECT e FROM Empleado e")})
+    @NamedQuery(name = "Empleado.findAll", query = "SELECT e FROM Empleado e"),
+    @NamedQuery(name = "Empleado.findByCi", query = "SELECT e FROM Empleado e WHERE e.ci = :ci"),
+    @NamedQuery(name = "Empleado.findByApellido", query = "SELECT e FROM Empleado e WHERE e.apellido = :apellido"),
+    @NamedQuery(name = "Empleado.findByNombre", query = "SELECT e FROM Empleado e WHERE e.nombre = :nombre"),
+    @NamedQuery(name = "Empleado.findByRol", query = "SELECT e FROM Empleado e WHERE e.rol = :rol"),
+    @NamedQuery(name = "Empleado.findByContrase\u00f1a", query = "SELECT e FROM Empleado e WHERE e.contrase\u00f1a = :contrase\u00f1a"),
+    @NamedQuery(name = "Empleado.findByUsuario", query = "SELECT e FROM Empleado e WHERE e.usuario = :usuario")})
 public class Empleado implements Serializable {
 
     private static final long serialVersionUID = 1L;
@@ -36,11 +44,11 @@ public class Empleado implements Serializable {
     @Column(name = "NOMBRE", length = 30)
     private String nombre;
     @Column(name = "ROL")
-    private Integer rol;
+    @Enumerated(EnumType.ORDINAL)
+    private Rol rol;
     @Column(name = "CONTRASE\u00d1A", length = 32)
     private String contraseña;
-    @Basic(optional = false)
-    @Column(name = "USUARIO", nullable = false, length = 30)
+    @Column(name = "USUARIO", length = 30)
     private String usuario;
     @OneToMany(mappedBy = "empleado", fetch = FetchType.LAZY)
     private List<Subministro> subministroList;
@@ -52,13 +60,15 @@ public class Empleado implements Serializable {
     public Empleado() {
     }
 
-    public Empleado(Integer ci) {
+    public Empleado(Integer ci, String apellido, String nombre, Rol rol) {
         this.ci = ci;
+        this.apellido = apellido;
+        this.nombre = nombre;
+        this.rol = rol;
     }
 
-    public Empleado(Integer ci, String usuario) {
+    public Empleado(Integer ci) {
         this.ci = ci;
-        this.usuario = usuario;
     }
 
     public Integer getCi() {
@@ -85,16 +95,19 @@ public class Empleado implements Serializable {
         this.nombre = nombre;
     }
 
-    public Integer getRol() {
+    public Rol getRol() {
         return rol;
     }
 
-    public void setRol(Integer rol) {
+    public void setRol(Rol rol) {
         this.rol = rol;
     }
 
+    public String getContraseña() {
+        return contraseña;
+    }
+
     public void setContraseña(String contraseña) {
-        
         this.contraseña = md5.getMD5Hash(contraseña);
     }
 

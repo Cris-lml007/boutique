@@ -9,6 +9,8 @@ import java.util.List;
 import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.FetchType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
@@ -23,10 +25,13 @@ import javax.persistence.Table;
  * @author metallica
  */
 @Entity
-@Table(name = "PROVEEDOR", catalog = "boutique1", schema = "")
+@Table(name = "PROVEEDOR_DISTRIBUIDOR", catalog = "boutique", schema = "")
 @NamedQueries({
-    @NamedQuery(name = "Proveedor.findAll", query = "SELECT p FROM Proveedor p")})
-public class Proveedor implements Serializable {
+    @NamedQuery(name = "ProveedorDistribuidor.findAll", query = "SELECT p FROM ProveedorDistribuidor p"),
+    @NamedQuery(name = "ProveedorDistribuidor.findByCod", query = "SELECT p FROM ProveedorDistribuidor p WHERE p.cod = :cod"),
+    @NamedQuery(name = "ProveedorDistribuidor.findByNombre", query = "SELECT p FROM ProveedorDistribuidor p WHERE p.nombre = :nombre"),
+    @NamedQuery(name = "ProveedorDistribuidor.findByTipo", query = "SELECT p FROM ProveedorDistribuidor p WHERE p.tipo = :tipo")})
+public class ProveedorDistribuidor implements Serializable {
 
     private static final long serialVersionUID = 1L;
     @Id
@@ -35,16 +40,21 @@ public class Proveedor implements Serializable {
     private Integer cod;
     @Column(name = "NOMBRE", length = 60)
     private String nombre;
+    @Column(name = "TIPO")
+    @Enumerated(EnumType.ORDINAL)
+    private Tipo tipo;
     @OneToMany(mappedBy = "proveedor", fetch = FetchType.LAZY)
     private List<Subministro> subministroList;
+    @OneToMany(mappedBy = "destino", fetch = FetchType.LAZY)
+    private List<Distribucion> distribucionList;
     @JoinColumn(name = "ORIGEN", referencedColumnName = "COD")
     @ManyToOne(fetch = FetchType.LAZY)
     private Localizacion origen;
 
-    public Proveedor() {
+    public ProveedorDistribuidor() {
     }
 
-    public Proveedor(Integer cod) {
+    public ProveedorDistribuidor(Integer cod) {
         this.cod = cod;
     }
 
@@ -64,12 +74,28 @@ public class Proveedor implements Serializable {
         this.nombre = nombre;
     }
 
+    public Tipo getTipo() {
+        return tipo;
+    }
+
+    public void setTipo(Tipo tipo) {
+        this.tipo = tipo;
+    }
+
     public List<Subministro> getSubministroList() {
         return subministroList;
     }
 
     public void setSubministroList(List<Subministro> subministroList) {
         this.subministroList = subministroList;
+    }
+
+    public List<Distribucion> getDistribucionList() {
+        return distribucionList;
+    }
+
+    public void setDistribucionList(List<Distribucion> distribucionList) {
+        this.distribucionList = distribucionList;
     }
 
     public Localizacion getOrigen() {
@@ -90,10 +116,10 @@ public class Proveedor implements Serializable {
     @Override
     public boolean equals(Object object) {
         // TODO: Warning - this method won't work in the case the id fields are not set
-        if (!(object instanceof Proveedor)) {
+        if (!(object instanceof ProveedorDistribuidor)) {
             return false;
         }
-        Proveedor other = (Proveedor) object;
+        ProveedorDistribuidor other = (ProveedorDistribuidor) object;
         if ((this.cod == null && other.cod != null) || (this.cod != null && !this.cod.equals(other.cod))) {
             return false;
         }
@@ -102,7 +128,7 @@ public class Proveedor implements Serializable {
 
     @Override
     public String toString() {
-        return "model.Proveedor[ cod=" + cod + " ]";
+        return "model.ProveedorDistribuidor[ cod=" + cod + " ]";
     }
     
 }

@@ -56,7 +56,7 @@ public class SplashView extends javax.swing.JFrame implements Runnable{
         lblLogo.setText("jLabel2");
 
         lblLoad.setForeground(new java.awt.Color(255, 255, 255));
-        lblLoad.setText("jLabel1");
+        lblLoad.setText("Cargando");
 
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);

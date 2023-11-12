@@ -8,9 +8,15 @@ import com.formdev.flatlaf.FlatLaf;
 import com.formdev.flatlaf.FlatLightLaf;
 import com.formdev.flatlaf.intellijthemes.FlatArcOrangeIJTheme;
 import controller.LoginController;
+import java.lang.annotation.Annotation;
+import java.lang.reflect.AnnotatedType;
+import java.lang.reflect.Field;
+import java.lang.reflect.Method;
 import java.util.Collection;
 import java.util.Collections;
 import javax.swing.UIManager;
+import model.Localizacion_;
+import model.Pais;
 import org.eclipse.persistence.internal.sessions.factories.model.login.LoginConfig;
 import view.LoginView;
 import view.SplashView;
@@ -34,5 +40,6 @@ public class Boutique {
         //login.setVisible(true);
         //new LoginController(login);
         new SplashView().setVisible(true);
+        
     }
 }

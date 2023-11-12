@@ -48,8 +48,10 @@ public class Localizacion implements Serializable {
     public Localizacion() {
     }
 
-    public Localizacion(String cod) {
+    public Localizacion(String cod,String nom, Pais p) {
         this.cod = cod;
+        this.ciudad=nom;
+        this.pais=p;
     }
 
     public String getCod() {
@@ -114,7 +116,8 @@ public class Localizacion implements Serializable {
 
     @Override
     public String toString() {
-        return "model.Localizacion[ cod=" + cod + " ]";
+        //return "model.Localizacion[ cod=" + cod + " ]";
+        return cod+" - "+ciudad+" - "+(pais!=null ? pais.getNombre() : "NULL");
     }
     
 }

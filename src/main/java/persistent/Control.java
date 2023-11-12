@@ -4,11 +4,14 @@
  */
 package persistent;
 
+import java.util.List;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.Persistence;
 import model.Almacen;
 import model.Empleado;
+import model.Localizacion;
+import model.Pais;
 import model.Rol;
 
 /**
@@ -46,21 +49,24 @@ public class Control {
     
     public static void main(String args []){
         Control a= new Control();
-        /*Empleado q=new Empleado(7329034,"Abalos","Cristian",Rol.gerente);
+        Empleado q=a.empleado.findEmpleado(7329034);//new Empleado(7329034,"Abalos","Cristian",Rol.gerente);
         q.setUsuario("cris");
         q.setContraseña("12345");
+        Pais p=a.pais.findPais("ARG");
+        
         try{
-            a.empleado.create(q);
+            a.pais.edit(p);
+            a.empleado.edit(q);
         }catch(Exception e){
             System.out.println("error "+e);
         }
-        q=a.empleado.findEmpleado(7328034);*/
-        Empleado q=a.empleado.login("cris", "12345");
+        q=a.empleado.findEmpleado(7328034);
+        /*Empleado q=a.empleado.login("cris", "12345");
         if(q==null) System.out.println("error");
         else{
             System.out.println("mmmm...parece que funciono");
             System.out.println(q.getRol());
-        }
+        }*/
         
     }
 }

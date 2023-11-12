@@ -34,7 +34,7 @@ public class Item implements Serializable {
     private static final long serialVersionUID = 1L;
     @Id
     @Basic(optional = false)
-    @Column(name = "COD", nullable = false)
+    @Column(name = "COD", nullable = true)
     private Integer cod;
     @Column(name = "NOMBRE", length = 30)
     private String nombre;
@@ -125,7 +125,8 @@ public class Item implements Serializable {
 
     @Override
     public String toString() {
-        return "model.Item[ cod=" + cod + " ]";
+        //return "model.Item[ cod=" + cod + " ]";
+        return cod + " - " + nombre + " - " + precio + " - " + descripcion;
     }
     
 }

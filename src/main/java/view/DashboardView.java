@@ -40,8 +40,9 @@ public class DashboardView extends javax.swing.JFrame {
         btnCerrarSesion = new javax.swing.JButton();
         btnPerfil = new javax.swing.JButton();
         lblEmpresa = new javax.swing.JLabel();
-        pnContenido = new javax.swing.JPanel();
+        pnFondo = new javax.swing.JPanel();
         btnSalir = new javax.swing.JButton();
+        pnContenido = new javax.swing.JPanel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setUndecorated(true);
@@ -52,7 +53,7 @@ public class DashboardView extends javax.swing.JFrame {
         lblUsuario.setText("Usuario");
 
         btnRegistrar.setBackground(new java.awt.Color(19, 19, 19));
-        btnRegistrar.setText("Registrar Orden");
+        btnRegistrar.setText("Registrar");
         btnRegistrar.setBorder(null);
 
         btnInventario.setBackground(new java.awt.Color(19, 19, 19));
@@ -125,10 +126,11 @@ public class DashboardView extends javax.swing.JFrame {
                 .addComponent(btnAdmin, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(0, 0, 0)
                 .addComponent(btnCerrarSesion, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(237, Short.MAX_VALUE))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
-        pnContenido.setBackground(new java.awt.Color(255, 255, 255));
+        pnFondo.setBackground(new java.awt.Color(255, 255, 255));
+        pnFondo.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
         btnSalir.setBackground(new java.awt.Color(255, 51, 51));
         btnSalir.setFont(new java.awt.Font("Cantarell", 1, 15)); // NOI18N
@@ -140,33 +142,34 @@ public class DashboardView extends javax.swing.JFrame {
                 btnSalirActionPerformed(evt);
             }
         });
+        pnFondo.add(btnSalir, new org.netbeans.lib.awtextra.AbsoluteConstraints(810, 0, 60, 40));
 
         javax.swing.GroupLayout pnContenidoLayout = new javax.swing.GroupLayout(pnContenido);
         pnContenido.setLayout(pnContenidoLayout);
         pnContenidoLayout.setHorizontalGroup(
             pnContenidoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(pnContenidoLayout.createSequentialGroup()
-                .addGap(803, 803, 803)
-                .addComponent(btnSalir, javax.swing.GroupLayout.PREFERRED_SIZE, 60, javax.swing.GroupLayout.PREFERRED_SIZE))
+            .addGap(0, 870, Short.MAX_VALUE)
         );
         pnContenidoLayout.setVerticalGroup(
             pnContenidoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(btnSalir, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE)
+            .addGap(0, 650, Short.MAX_VALUE)
         );
+
+        pnFondo.add(pnContenido, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 40, 870, 650));
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addComponent(pnMenu, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(pnContenido, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addGap(299, 299, 299)
+                .addComponent(pnFondo, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+            .addComponent(pnMenu, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addComponent(pnFondo, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
             .addComponent(pnMenu, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-            .addComponent(pnContenido, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
         );
 
         pack();
@@ -224,7 +227,8 @@ public class DashboardView extends javax.swing.JFrame {
     private javax.swing.JLabel lblEmpresa;
     public javax.swing.JLabel lblUsuario;
     private javax.swing.JSeparator lnLine;
-    private javax.swing.JPanel pnContenido;
+    public javax.swing.JPanel pnContenido;
+    private javax.swing.JPanel pnFondo;
     private javax.swing.JPanel pnMenu;
     // End of variables declaration//GEN-END:variables
 }

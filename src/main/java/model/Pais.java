@@ -41,8 +41,9 @@ public class Pais implements Serializable {
     public Pais() {
     }
 
-    public Pais(String cod) {
+    public Pais(String cod,String nom) {
         this.cod = cod;
+        this.nombre=nom;
     }
 
     public String getCod() {
@@ -91,7 +92,8 @@ public class Pais implements Serializable {
 
     @Override
     public String toString() {
-        return "model.Pais[ cod=" + cod + " ]";
+        //return "model.Pais[ cod=" + cod + " ]";
+        return cod+" - "+nombre;
     }
     
 }

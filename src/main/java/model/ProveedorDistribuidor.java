@@ -128,7 +128,8 @@ public class ProveedorDistribuidor implements Serializable {
 
     @Override
     public String toString() {
-        return "model.ProveedorDistribuidor[ cod=" + cod + " ]";
+        //return "model.ProveedorDistribuidor[ cod=" + cod + " ]";
+        return cod+" - "+nombre+" - "+origen.getCiudad()+" - "+tipo;
     }
     
 }

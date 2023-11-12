@@ -10,7 +10,7 @@ package model;
  */
 public enum Tipo{
     proveedor,
-    plata,
+    planta,
     local,
     otros    
 }

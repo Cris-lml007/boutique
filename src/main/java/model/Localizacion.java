@@ -67,7 +67,7 @@ public class Localizacion implements Serializable {
     }
 
     public void setCiudad(String ciudad) {
-        this.ciudad = ciudad;
+        this.ciudad = ciudad.toUpperCase();
     }
 
     public Pais getPais() {

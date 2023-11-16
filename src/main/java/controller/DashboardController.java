@@ -34,7 +34,7 @@ public class DashboardController {
             public void actionPerformed(ActionEvent ae) {
                 RegistrarView v=new RegistrarView();
                 new utility.WindowDesign().callPanel(v, view.pnContenido);
-                new RegistrarController(v);
+                new RegistrarController(v,current);
             }
         });
     }

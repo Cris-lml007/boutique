@@ -235,10 +235,10 @@ public class RegistrarLocalController {
         view.cbPais.setModel(modelCbPais);
         
         
-        modelPais=new TableJPA(lp, columnasPais, new boolean[]{false,false});
+        modelPais=new TableJPA(lp, columnasPais, new Boolean[]{false,false});
         view.tbPais.setModel(modelPais);
         
-        modelLocal=new TableJPA(ll, columnasLocal, new boolean[]{false,false,false});
+        modelLocal=new TableJPA(ll, columnasLocal, new Boolean[]{false,false,false});
         view.tbLocal.setModel(modelLocal);
     }
 }

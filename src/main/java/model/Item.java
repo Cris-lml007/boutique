@@ -16,6 +16,7 @@ import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
+import javax.persistence.Transient;
 
 /**
  *
@@ -47,6 +48,9 @@ public class Item implements Serializable {
     private List<DetalleSub> detalleSubList;
     @OneToMany(mappedBy = "producto", fetch = FetchType.LAZY)
     private List<DetalleDis> detalleDisList;
+    
+    @Transient
+    int mode=0;
 
     public Item() {
     }
@@ -68,7 +72,7 @@ public class Item implements Serializable {
     }
 
     public void setNombre(String nombre) {
-        this.nombre = nombre;
+        this.nombre = nombre.toUpperCase();
     }
 
     public BigDecimal getPrecio() {
@@ -123,10 +127,26 @@ public class Item implements Serializable {
         return true;
     }
 
+    public void changedModeToString(int i){
+        this.mode=i;
+    }
+    
+    public int getChangedToString(){
+        return mode;
+    }
+    
     @Override
     public String toString() {
         //return "model.Item[ cod=" + cod + " ]";
-        return cod + " - " + nombre + " - " + precio + " - " + descripcion;
+        //return cod + " - " + nombre + " - " + precio + " - " + descripcion;
+        switch(mode){
+            case 0:
+                return cod + " - " + nombre + " - " + precio + " - " + descripcion;
+            case 1:
+                return nombre;
+            default:
+                throw new AssertionError();
+        }
     }
     
 }

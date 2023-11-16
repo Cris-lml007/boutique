@@ -51,7 +51,7 @@ public class Pais implements Serializable {
     }
 
     public void setCod(String cod) {
-        this.cod = cod;
+        this.cod = cod.toUpperCase();
     }
 
     public String getNombre() {
@@ -59,7 +59,7 @@ public class Pais implements Serializable {
     }
 
     public void setNombre(String nombre) {
-        this.nombre = nombre;
+        this.nombre = nombre.toUpperCase();
     }
 
     public List<Localizacion> getLocalizacionList() {

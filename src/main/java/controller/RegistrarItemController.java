@@ -99,7 +99,7 @@ public class RegistrarItemController{
     }
     
     public void loadData(){
-        modelTable=new TableJPA(control.item.findItemEntities(),new String[]{"Cod","Nombre","Precio"}, new boolean[]{false,false,false});
+        modelTable=new TableJPA(control.item.findItemEntities(),new String[]{"Cod","Nombre","Precio"}, new Boolean[]{false,false,false});
         view.tbItem.setModel(modelTable);
     }
 }

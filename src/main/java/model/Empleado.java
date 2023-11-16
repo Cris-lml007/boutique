@@ -84,7 +84,7 @@ public class Empleado implements Serializable {
     }
 
     public void setApellido(String apellido) {
-        this.apellido = apellido;
+        this.apellido = apellido.toUpperCase();
     }
 
     public String getNombre() {
@@ -92,7 +92,7 @@ public class Empleado implements Serializable {
     }
 
     public void setNombre(String nombre) {
-        this.nombre = nombre;
+        this.nombre = nombre.toUpperCase();
     }
 
     public Rol getRol() {

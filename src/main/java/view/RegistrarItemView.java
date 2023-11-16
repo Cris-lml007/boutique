@@ -63,15 +63,11 @@ public class RegistrarItemView extends javax.swing.JPanel {
         });
         jScrollPane1.setViewportView(tbItem);
 
-        txtNombre.setText("jTextField1");
-
         jLabel1.setForeground(new java.awt.Color(0, 0, 0));
         jLabel1.setText("Nombre:");
 
         jLabel2.setForeground(new java.awt.Color(0, 0, 0));
         jLabel2.setText("Precio:");
-
-        txtPrecio.setText("jTextField2");
 
         jLabel3.setForeground(new java.awt.Color(0, 0, 0));
         jLabel3.setText("Descripcion:");

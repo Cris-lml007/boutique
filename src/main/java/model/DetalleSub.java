@@ -127,7 +127,8 @@ public class DetalleSub implements Serializable {
 
     @Override
     public String toString() {
-        return "model.DetalleSub[ id=" + id + " ]";
+        //return "model.DetalleSub[ id=" + id + " ]";
+        return producto.getNombre() + " - " + cantidad + " - " + precio + " - " + (precio.doubleValue()*cantidad);
     }
     
 }

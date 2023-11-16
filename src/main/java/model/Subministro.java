@@ -5,12 +5,18 @@
 package model;
 
 import java.io.Serializable;
+import java.text.SimpleDateFormat;
+import java.time.Instant;
+import java.time.LocalDate;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
@@ -37,7 +43,7 @@ public class Subministro implements Serializable {
     private static final long serialVersionUID = 1L;
     @Id
     @Basic(optional = false)
-    @Column(name = "COD", nullable = false)
+    @Column(name = "COD", nullable = true, updatable = true)
     private Integer cod;
     @Basic(optional = false)
     @Column(name = "FECHA", nullable = false)
@@ -58,6 +64,11 @@ public class Subministro implements Serializable {
     private List<DetalleSub> detalleSubList;
 
     public Subministro() {
+        try{
+        fecha=new SimpleDateFormat("yyyy-MM-dd").parse(LocalDate.now().toString());
+        }catch(Exception e){
+            System.out.println("existe un error en la fecha: "+e);
+        }
     }
 
     public Subministro(Integer cod) {

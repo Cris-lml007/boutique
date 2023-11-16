@@ -19,6 +19,7 @@ import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
+import javax.persistence.Transient;
 
 /**
  *
@@ -50,6 +51,9 @@ public class ProveedorDistribuidor implements Serializable {
     @JoinColumn(name = "ORIGEN", referencedColumnName = "COD")
     @ManyToOne(fetch = FetchType.LAZY)
     private Localizacion origen;
+    
+    @Transient
+    int mode=0;
 
     public ProveedorDistribuidor() {
     }
@@ -71,7 +75,7 @@ public class ProveedorDistribuidor implements Serializable {
     }
 
     public void setNombre(String nombre) {
-        this.nombre = nombre;
+        this.nombre = nombre.toUpperCase();
     }
 
     public Tipo getTipo() {
@@ -126,10 +130,27 @@ public class ProveedorDistribuidor implements Serializable {
         return true;
     }
 
+    
+    public void changedModeToString(int i){
+        this.mode=i;
+    }
+    
+    public int getChangedToString(){
+        return mode;
+    }
+    
     @Override
     public String toString() {
         //return "model.ProveedorDistribuidor[ cod=" + cod + " ]";
-        return cod+" - "+nombre+" - "+origen.getCiudad()+" - "+tipo;
+        switch (mode) {
+            case 0:
+                return cod+" - "+nombre+" - "+origen.getCiudad()+" - "+tipo;
+            case 1:
+                return nombre;
+            default:
+                throw new AssertionError();
+        }
+        
     }
     
 }

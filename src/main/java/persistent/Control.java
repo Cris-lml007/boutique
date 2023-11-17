@@ -35,8 +35,6 @@ public class Control {
     public ProveedorDistribuidorJpaController proveedorDis;
 
     public Control() {
-        //Properties pro=new Properties();
-        //pro.setProperty("eclipselink.id-validation", "EXISTS");
         conexion=Persistence.createEntityManagerFactory("JpaBoutique");
         almacen=new AlmacenJpaController(conexion);
         detalleDistribucion=new DetalleDisJpaController(conexion);

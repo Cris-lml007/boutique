@@ -55,6 +55,7 @@ public class RegistrarEntradaController {
     Empleado emp;
     JTextField editPD;
     JTextField editItem;
+    double total=0;
 
     public RegistrarEntradaController(RegistrarEntradaView v,Empleado e) {
         this.emp=e;
@@ -131,13 +132,6 @@ public class RegistrarEntradaController {
             view.txtDesc.setText(null);
         }));
         
-        view.btnLimpiar.addActionListener((ae -> {
-            pd=null;
-            view.txtNIT.setText(null);
-            editPD.setText(null);
-            view.txtDesc.setText(null);
-        }));
-        
         view.txtCodItem.addKeyListener(new KeyListener() {
             @Override
             public void keyTyped(KeyEvent ke) {
@@ -199,7 +193,8 @@ public class RegistrarEntradaController {
                 det.setCantidad(Integer.parseInt(view.txtCantidad.getText()));
                 det.setCantExis(Integer.parseInt(view.txtCantidad.getText()));
                 modelTable.addElement(det);
-                view.txtTotal.setText((det.getPrecio().doubleValue()*det.getCantidad())+"");
+                total+=(det.getPrecio().doubleValue()*det.getCantidad());
+                view.txtTotal.setText(total+"");
                 view.txtCodItem.setText(null);
                 view.cbItem.setSelectedItem(null);
                 view.txtPrecio.setText(null);
@@ -214,23 +209,27 @@ public class RegistrarEntradaController {
                 int y=view.tbItem.getSelectedColumn();
                 if(view.tbItem.isCellEditable(x, y)){
                     if(view.tbItem.getColumnName(y).toString().equals("Precio")){
-                        DetalleSub d=(DetalleSub)modelTable.getObject(x);
+                        DetalleSub d=modelTable.getObject(x);
                         String t=JOptionPane.showInputDialog(view, "Precio: ");
                         if(t==null) return;
                         double precio = Double.parseDouble(t);
                         BigDecimal p=BigDecimal.valueOf(precio);
+                        total-= d.getPrecio().doubleValue()*d.getCantidad();
                         d.setPrecio(p);
                         modelTable.update(d);
-                        view.txtTotal.setText((d.getPrecio().doubleValue()*d.getCantidad())+"");
+                        total+= d.getPrecio().doubleValue()*d.getCantidad();
+                        view.txtTotal.setText(total+"");
                     }else if(view.tbItem.getColumnName(y).toString().equals("Cantidad")){
-                        DetalleSub d=(DetalleSub)modelTable.getObject(x);
+                        DetalleSub d=modelTable.getObject(x);
                         String t=JOptionPane.showInputDialog(view, "Cantidad: ");
                         if(t==null) return;
+                        total-= d.getPrecio().doubleValue()*d.getCantidad();
                         Integer cant = Integer.parseInt(t);
                         d.setCantidad(cant);
                         d.setCantExis(cant);
                         modelTable.update(d);
-                        view.txtTotal.setText((d.getPrecio().doubleValue()*d.getCantidad())+"");
+                        total+= d.getPrecio().doubleValue()*d.getCantidad();
+                        view.txtTotal.setText(total+"");
                     }
                 }
             }
@@ -253,11 +252,16 @@ public class RegistrarEntradaController {
         });
         
         view.btnQuitar.addActionListener((ae -> {
+            DetalleSub d= modelTable.getObject(view.tbItem.getSelectedRow());
+            total-= d.getPrecio().doubleValue()*d.getCantidad();
+            view.txtTotal.setText(total+"");
             modelTable.removeIndex(view.tbItem.getSelectedRow());
         }));
         
         view.btnQuitarTodo.addActionListener((ae -> {
             modelTable.clear();
+            total=0;
+            view.txtTotal.setText("0");
         }));
         
         view.btnFinalizar.addActionListener((ae -> {
@@ -277,6 +281,7 @@ public class RegistrarEntradaController {
                 for(DetalleSub i : modelTable.getAll()){
                     i.setSubministro(sub);
                     control.detalleSubministro.create(i);
+                    sub=control.subministro.findSubministro(sub.getCod());
                 }
             }catch(Exception e){
                 System.out.println("Hubo un error al crear detalle: "+e);

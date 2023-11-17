@@ -23,7 +23,6 @@ import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableModel;
 import model.Localizacion;
 import model.Pais;
-import model.Pais_;
 import model.TableJPA;
 import persistent.Control;
 import utility.lockInputType;

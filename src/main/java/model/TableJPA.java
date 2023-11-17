@@ -77,7 +77,7 @@ public class TableJPA<T> implements TableModel{
         notifyTableHeaderChanged();
     }
     
-    public Object getObject(int i){
+    public T getObject(int i){
         return list.get(i);
     }
     

@@ -5,6 +5,7 @@
 package persistent;
 
 import java.util.List;
+import java.util.Properties;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.Persistence;
@@ -34,6 +35,8 @@ public class Control {
     public ProveedorDistribuidorJpaController proveedorDis;
 
     public Control() {
+        //Properties pro=new Properties();
+        //pro.setProperty("eclipselink.id-validation", "EXISTS");
         conexion=Persistence.createEntityManagerFactory("JpaBoutique");
         almacen=new AlmacenJpaController(conexion);
         detalleDistribucion=new DetalleDisJpaController(conexion);

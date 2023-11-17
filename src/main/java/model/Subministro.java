@@ -44,6 +44,7 @@ public class Subministro implements Serializable {
     @Id
     @Basic(optional = false)
     @Column(name = "COD", nullable = true, updatable = true)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer cod;
     @Basic(optional = false)
     @Column(name = "FECHA", nullable = false)

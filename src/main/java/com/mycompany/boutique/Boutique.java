@@ -15,7 +15,6 @@ import java.lang.reflect.Method;
 import java.util.Collection;
 import java.util.Collections;
 import javax.swing.UIManager;
-import model.Localizacion_;
 import model.Pais;
 import org.eclipse.persistence.internal.sessions.factories.model.login.LoginConfig;
 import view.LoginView;

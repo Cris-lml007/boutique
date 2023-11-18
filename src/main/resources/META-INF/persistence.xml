@@ -12,6 +12,7 @@
     <class>model.Item</class>
     <class>model.Subministro</class>
     <class>model.Pais</class>
+    <class>model.Categoria</class>
     <properties>
       <property name="javax.persistence.jdbc.url" value="jdbc:mysql://localhost:3306/boutique?serverTimezone=UTC"/>
       <property name="javax.persistence.jdbc.user" value="root"/>

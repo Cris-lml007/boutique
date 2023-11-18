@@ -95,6 +95,10 @@ public class DetalleSub implements Serializable {
     public Item getProducto() {
         return producto;
     }
+    
+    public String getProductoName(){
+        return producto.getNombre();
+    }
 
     public void setProducto(Item producto) {
         this.producto = producto;
@@ -106,6 +110,10 @@ public class DetalleSub implements Serializable {
 
     public void setSubministro(Subministro subministro) {
         this.subministro = subministro;
+    }
+    
+    public double getSubtotal(){
+        return cantidad*precio.doubleValue();
     }
 
     @Override

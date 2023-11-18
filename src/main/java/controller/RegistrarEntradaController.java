@@ -64,7 +64,8 @@ public class RegistrarEntradaController {
         editItem=(JTextField) view.cbItem.getEditor().getEditorComponent();
         loadData();
         initAction();
-        modelTable=new TableJPA(new String[]{"Producto","Cantidad","Precio","Subtotal"}, new Boolean[]{false,true,true,false});
+        modelTable=new TableJPA(new String[]{"Producto","Cantidad","Precio","Subtotal"},new String[]{"productoName","cantidad","precio","subtotal"}, new Boolean[]{false,true,true,false});
+        modelTable.loadMethod(DetalleSub.class);
         view.tbItem.setModel(modelTable);
     }
     
@@ -286,6 +287,10 @@ public class RegistrarEntradaController {
             }catch(Exception e){
                 System.out.println("Hubo un error al crear detalle: "+e);
             }
+        }));
+        
+        view.btnBuscar.addActionListener((ae -> {
+            
         }));
     }
     

@@ -73,6 +73,10 @@ public class Localizacion implements Serializable {
     public Pais getPais() {
         return pais;
     }
+    
+    public String getPaisName(){
+        return pais.getNombre();
+    }
 
     public void setPais(Pais pais) {
         this.pais = pais;

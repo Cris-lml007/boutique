@@ -167,7 +167,7 @@ public class RegistrarPDController {
     public final void loadData(){
         listLocal=control.localizacion.findLocalizacionEntities();
         List <ProveedorDistribuidor> l=control.proveedorDis.findProveedorDistribuidorEntities();
-        model=new TableJPA(l, new String[]{"NIT","Nombre","Origen","Tipo"}, new Boolean[]{false,false,false,false});
+        model=new TableJPA(l, new String[]{"NIT","Nombre","Origen","Tipo"},new String[]{"cod","nombre","origenName","tipo"}, new Boolean[]{false,false,false,false});
         view.tbPD.setModel(model);
         
         modelCbLocal=new DefaultComboBoxModel((Vector) listLocal);

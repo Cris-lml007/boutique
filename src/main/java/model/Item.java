@@ -14,6 +14,8 @@ import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
@@ -47,6 +49,9 @@ public class Item implements Serializable {
     private BigDecimal precio;
     @Column(name = "DESCRIPCION", length = 255)
     private String descripcion;
+    @JoinColumn(name = "CATEGORIA", referencedColumnName = "ID")
+    @ManyToOne(fetch = FetchType.LAZY)
+    private Categoria categoria;
     @OneToMany(mappedBy = "producto", fetch = FetchType.LAZY)
     private List<DetalleSub> detalleSubList;
     @OneToMany(mappedBy = "producto", fetch = FetchType.LAZY)
@@ -150,6 +155,14 @@ public class Item implements Serializable {
             default:
                 throw new AssertionError();
         }
+    }
+
+    public Categoria getCategoria() {
+        return categoria;
+    }
+
+    public void setCategoria(Categoria categoria) {
+        this.categoria = categoria;
     }
     
 }

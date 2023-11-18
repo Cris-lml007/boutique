@@ -105,6 +105,10 @@ public class ProveedorDistribuidor implements Serializable {
     public Localizacion getOrigen() {
         return origen;
     }
+    
+    public String getOrigenName(){
+        return origen.getCiudad();
+    }
 
     public void setOrigen(Localizacion origen) {
         this.origen = origen;

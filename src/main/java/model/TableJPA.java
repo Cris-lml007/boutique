@@ -4,6 +4,7 @@
  */
 package model;
 
+import java.lang.reflect.Method;
 import java.net.http.WebSocket;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -24,18 +25,44 @@ public class TableJPA<T> implements TableModel{
     List<T>list=new ArrayList<>();
     List<String>columns;
     List<Boolean> canEdit;
+    List<String> atribName;
+    
+    List<Method> getters=new ArrayList<>();
 
-    public TableJPA(List data,String [] columns,Boolean edit[]){
+    public TableJPA(List data,String [] columns,String []atribName,Boolean edit[]){
         this.list=data;
+        this.atribName=Arrays.asList(atribName);
+        this.columns=Arrays.asList(columns);
+        this.canEdit=Arrays.asList(edit);
+        listEvent=new EventListenerList();
+        T obj = list.get(0);
+        try{
+            for(String name : atribName){
+                Method get=obj.getClass().getMethod("get"+name.substring(0,1).toUpperCase()+name.substring(1));
+                getters.add(get);
+            }
+        }catch(Exception e){
+            System.out.println("error al cargar lista de metodos para reflexion: "+e);
+        }
+    }
+    
+    public TableJPA(String [] columns,String []atribName, Boolean edit[]){
+        this.atribName=Arrays.asList(atribName);
         this.columns=Arrays.asList(columns);
         this.canEdit=Arrays.asList(edit);
         listEvent=new EventListenerList();
     }
     
-    public TableJPA(String [] columns, Boolean edit[]){
-        this.columns=Arrays.asList(columns);
-        this.canEdit=Arrays.asList(edit);
-        listEvent=new EventListenerList();
+    public void loadMethod(Class<T> o){
+        try{
+            T obj =o.newInstance();
+            for(String name : atribName){
+                Method get=obj.getClass().getMethod("get"+name.substring(0,1).toUpperCase()+name.substring(1));
+                getters.add(get);
+            }
+        }catch(Exception e){
+            System.out.println("error al cargar lista de metodos para reflexion: "+e);
+        }
     }
     
     public void addElement(T obj){
@@ -109,9 +136,17 @@ public class TableJPA<T> implements TableModel{
 
     @Override
     public Object getValueAt(int i, int i1) {
-        Object q= list.get(i);
-        return q.toString().split(" - ")[i1];
+        //Object q= list.get(i);
+        //return q.toString().split(" - ")[i1];
         
+        T obj = list.get(i);
+        try{
+            Method getterMethod = getters.get(i1);
+            return getterMethod.invoke(obj);
+        }catch(Exception e){
+            System.out.println("error al hacer la reflexion: "+e);
+            return null;
+        }
     }
 
     @Override

@@ -40,6 +40,8 @@ public class RegistrarLocalController {
     public DefaultComboBoxModel<Pais> modelCbPais;
     String [] columnasPais={"COD","Pais"};
     String [] columnasLocal={"COD","Ciudad","Pais"};
+    String [] atribLocal={"cod","ciudad","paisName"};
+    String [] atribPais={"cod","nombre"};
     public TableJPA modelPais;
     public TableJPA modelLocal;
     public Pais pais;
@@ -234,10 +236,10 @@ public class RegistrarLocalController {
         view.cbPais.setModel(modelCbPais);
         
         
-        modelPais=new TableJPA(lp, columnasPais, new Boolean[]{false,false});
+        modelPais=new TableJPA(lp, columnasPais,atribPais, new Boolean[]{false,false});
         view.tbPais.setModel(modelPais);
         
-        modelLocal=new TableJPA(ll, columnasLocal, new Boolean[]{false,false,false});
+        modelLocal=new TableJPA(ll, columnasLocal, atribLocal,new Boolean[]{false,false,false});
         view.tbLocal.setModel(modelLocal);
     }
 }

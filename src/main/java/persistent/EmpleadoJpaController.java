@@ -14,11 +14,12 @@ import java.util.ArrayList;
 import java.util.List;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
-import javax.persistence.Persistence;
 import model.Distribucion;
 import model.Empleado;
+import model.HistorialItem;
 import model.Rol;
 import model.md5;
+import persistent.exceptions.IllegalOrphanException;
 import persistent.exceptions.NonexistentEntityException;
 import persistent.exceptions.PreexistingEntityException;
 
@@ -47,6 +48,9 @@ public class EmpleadoJpaController implements Serializable {
         if (empleado.getDistribucionList1() == null) {
             empleado.setDistribucionList1(new ArrayList<Distribucion>());
         }
+        if (empleado.getHistorialItemList() == null) {
+            empleado.setHistorialItemList(new ArrayList<HistorialItem>());
+        }
         EntityManager em = null;
         try {
             em = getEntityManager();
@@ -69,6 +73,12 @@ public class EmpleadoJpaController implements Serializable {
                 attachedDistribucionList1.add(distribucionList1DistribucionToAttach);
             }
             empleado.setDistribucionList1(attachedDistribucionList1);
+            List<HistorialItem> attachedHistorialItemList = new ArrayList<HistorialItem>();
+            for (HistorialItem historialItemListHistorialItemToAttach : empleado.getHistorialItemList()) {
+                historialItemListHistorialItemToAttach = em.getReference(historialItemListHistorialItemToAttach.getClass(), historialItemListHistorialItemToAttach.getId());
+                attachedHistorialItemList.add(historialItemListHistorialItemToAttach);
+            }
+            empleado.setHistorialItemList(attachedHistorialItemList);
             em.persist(empleado);
             for (Subministro subministroListSubministro : empleado.getSubministroList()) {
                 Empleado oldEmpleadoOfSubministroListSubministro = subministroListSubministro.getEmpleado();
@@ -97,6 +107,15 @@ public class EmpleadoJpaController implements Serializable {
                     oldEncargadoOfDistribucionList1Distribucion = em.merge(oldEncargadoOfDistribucionList1Distribucion);
                 }
             }
+            for (HistorialItem historialItemListHistorialItem : empleado.getHistorialItemList()) {
+                Empleado oldEmpleadoOfHistorialItemListHistorialItem = historialItemListHistorialItem.getEmpleado();
+                historialItemListHistorialItem.setEmpleado(empleado);
+                historialItemListHistorialItem = em.merge(historialItemListHistorialItem);
+                if (oldEmpleadoOfHistorialItemListHistorialItem != null) {
+                    oldEmpleadoOfHistorialItemListHistorialItem.getHistorialItemList().remove(historialItemListHistorialItem);
+                    oldEmpleadoOfHistorialItemListHistorialItem = em.merge(oldEmpleadoOfHistorialItemListHistorialItem);
+                }
+            }
             em.getTransaction().commit();
         } catch (Exception ex) {
             if (findEmpleado(empleado.getCi()) != null) {
@@ -110,7 +129,7 @@ public class EmpleadoJpaController implements Serializable {
         }
     }
 
-    public void edit(Empleado empleado) throws NonexistentEntityException, Exception {
+    public void edit(Empleado empleado) throws IllegalOrphanException, NonexistentEntityException, Exception {
         EntityManager em = null;
         try {
             em = getEntityManager();
@@ -122,6 +141,20 @@ public class EmpleadoJpaController implements Serializable {
             List<Distribucion> distribucionListNew = empleado.getDistribucionList();
             List<Distribucion> distribucionList1Old = persistentEmpleado.getDistribucionList1();
             List<Distribucion> distribucionList1New = empleado.getDistribucionList1();
+            List<HistorialItem> historialItemListOld = persistentEmpleado.getHistorialItemList();
+            List<HistorialItem> historialItemListNew = empleado.getHistorialItemList();
+            List<String> illegalOrphanMessages = null;
+            for (HistorialItem historialItemListOldHistorialItem : historialItemListOld) {
+                if (!historialItemListNew.contains(historialItemListOldHistorialItem)) {
+                    if (illegalOrphanMessages == null) {
+                        illegalOrphanMessages = new ArrayList<String>();
+                    }
+                    illegalOrphanMessages.add("You must retain HistorialItem " + historialItemListOldHistorialItem + " since its empleado field is not nullable.");
+                }
+            }
+            if (illegalOrphanMessages != null) {
+                throw new IllegalOrphanException(illegalOrphanMessages);
+            }
             List<Subministro> attachedSubministroListNew = new ArrayList<Subministro>();
             for (Subministro subministroListNewSubministroToAttach : subministroListNew) {
                 subministroListNewSubministroToAttach = em.getReference(subministroListNewSubministroToAttach.getClass(), subministroListNewSubministroToAttach.getCod());
@@ -143,6 +176,13 @@ public class EmpleadoJpaController implements Serializable {
             }
             distribucionList1New = attachedDistribucionList1New;
             empleado.setDistribucionList1(distribucionList1New);
+            List<HistorialItem> attachedHistorialItemListNew = new ArrayList<HistorialItem>();
+            for (HistorialItem historialItemListNewHistorialItemToAttach : historialItemListNew) {
+                historialItemListNewHistorialItemToAttach = em.getReference(historialItemListNewHistorialItemToAttach.getClass(), historialItemListNewHistorialItemToAttach.getId());
+                attachedHistorialItemListNew.add(historialItemListNewHistorialItemToAttach);
+            }
+            historialItemListNew = attachedHistorialItemListNew;
+            empleado.setHistorialItemList(historialItemListNew);
             empleado = em.merge(empleado);
             for (Subministro subministroListOldSubministro : subministroListOld) {
                 if (!subministroListNew.contains(subministroListOldSubministro)) {
@@ -195,6 +235,17 @@ public class EmpleadoJpaController implements Serializable {
                     }
                 }
             }
+            for (HistorialItem historialItemListNewHistorialItem : historialItemListNew) {
+                if (!historialItemListOld.contains(historialItemListNewHistorialItem)) {
+                    Empleado oldEmpleadoOfHistorialItemListNewHistorialItem = historialItemListNewHistorialItem.getEmpleado();
+                    historialItemListNewHistorialItem.setEmpleado(empleado);
+                    historialItemListNewHistorialItem = em.merge(historialItemListNewHistorialItem);
+                    if (oldEmpleadoOfHistorialItemListNewHistorialItem != null && !oldEmpleadoOfHistorialItemListNewHistorialItem.equals(empleado)) {
+                        oldEmpleadoOfHistorialItemListNewHistorialItem.getHistorialItemList().remove(historialItemListNewHistorialItem);
+                        oldEmpleadoOfHistorialItemListNewHistorialItem = em.merge(oldEmpleadoOfHistorialItemListNewHistorialItem);
+                    }
+                }
+            }
             em.getTransaction().commit();
         } catch (Exception ex) {
             String msg = ex.getLocalizedMessage();
@@ -212,7 +263,7 @@ public class EmpleadoJpaController implements Serializable {
         }
     }
 
-    public void destroy(Integer id) throws NonexistentEntityException {
+    public void destroy(Integer id) throws IllegalOrphanException, NonexistentEntityException {
         EntityManager em = null;
         try {
             em = getEntityManager();
@@ -223,6 +274,17 @@ public class EmpleadoJpaController implements Serializable {
                 empleado.getCi();
             } catch (EntityNotFoundException enfe) {
                 throw new NonexistentEntityException("The empleado with id " + id + " no longer exists.", enfe);
+            }
+            List<String> illegalOrphanMessages = null;
+            List<HistorialItem> historialItemListOrphanCheck = empleado.getHistorialItemList();
+            for (HistorialItem historialItemListOrphanCheckHistorialItem : historialItemListOrphanCheck) {
+                if (illegalOrphanMessages == null) {
+                    illegalOrphanMessages = new ArrayList<String>();
+                }
+                illegalOrphanMessages.add("This Empleado (" + empleado + ") cannot be destroyed since the HistorialItem " + historialItemListOrphanCheckHistorialItem + " in its historialItemList field has a non-nullable empleado field.");
+            }
+            if (illegalOrphanMessages != null) {
+                throw new IllegalOrphanException(illegalOrphanMessages);
             }
             List<Subministro> subministroList = empleado.getSubministroList();
             for (Subministro subministroListSubministro : subministroList) {

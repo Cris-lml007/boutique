@@ -15,9 +15,10 @@ import java.util.List;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import model.DetalleDis;
+import model.HistorialItem;
 import model.Item;
+import persistent.exceptions.IllegalOrphanException;
 import persistent.exceptions.NonexistentEntityException;
-import persistent.exceptions.PreexistingEntityException;
 
 /**
  *
@@ -34,12 +35,15 @@ public class ItemJpaController implements Serializable {
         return emf.createEntityManager();
     }
 
-    public void create(Item item) throws PreexistingEntityException, Exception {
+    public void create(Item item) {
         if (item.getDetalleSubList() == null) {
             item.setDetalleSubList(new ArrayList<DetalleSub>());
         }
         if (item.getDetalleDisList() == null) {
             item.setDetalleDisList(new ArrayList<DetalleDis>());
+        }
+        if (item.getHistorialItemList() == null) {
+            item.setHistorialItemList(new ArrayList<HistorialItem>());
         }
         EntityManager em = null;
         try {
@@ -57,6 +61,12 @@ public class ItemJpaController implements Serializable {
                 attachedDetalleDisList.add(detalleDisListDetalleDisToAttach);
             }
             item.setDetalleDisList(attachedDetalleDisList);
+            List<HistorialItem> attachedHistorialItemList = new ArrayList<HistorialItem>();
+            for (HistorialItem historialItemListHistorialItemToAttach : item.getHistorialItemList()) {
+                historialItemListHistorialItemToAttach = em.getReference(historialItemListHistorialItemToAttach.getClass(), historialItemListHistorialItemToAttach.getId());
+                attachedHistorialItemList.add(historialItemListHistorialItemToAttach);
+            }
+            item.setHistorialItemList(attachedHistorialItemList);
             em.persist(item);
             for (DetalleSub detalleSubListDetalleSub : item.getDetalleSubList()) {
                 Item oldProductoOfDetalleSubListDetalleSub = detalleSubListDetalleSub.getProducto();
@@ -76,12 +86,16 @@ public class ItemJpaController implements Serializable {
                     oldProductoOfDetalleDisListDetalleDis = em.merge(oldProductoOfDetalleDisListDetalleDis);
                 }
             }
-            em.getTransaction().commit();
-        } catch (Exception ex) {
-            if (findItem(item.getCod()) != null) {
-                throw new PreexistingEntityException("Item " + item + " already exists.", ex);
+            for (HistorialItem historialItemListHistorialItem : item.getHistorialItemList()) {
+                Item oldItemOfHistorialItemListHistorialItem = historialItemListHistorialItem.getItem();
+                historialItemListHistorialItem.setItem(item);
+                historialItemListHistorialItem = em.merge(historialItemListHistorialItem);
+                if (oldItemOfHistorialItemListHistorialItem != null) {
+                    oldItemOfHistorialItemListHistorialItem.getHistorialItemList().remove(historialItemListHistorialItem);
+                    oldItemOfHistorialItemListHistorialItem = em.merge(oldItemOfHistorialItemListHistorialItem);
+                }
             }
-            throw ex;
+            em.getTransaction().commit();
         } finally {
             if (em != null) {
                 em.close();
@@ -89,7 +103,7 @@ public class ItemJpaController implements Serializable {
         }
     }
 
-    public void edit(Item item) throws NonexistentEntityException, Exception {
+    public void edit(Item item) throws IllegalOrphanException, NonexistentEntityException, Exception {
         EntityManager em = null;
         try {
             em = getEntityManager();
@@ -99,6 +113,20 @@ public class ItemJpaController implements Serializable {
             List<DetalleSub> detalleSubListNew = item.getDetalleSubList();
             List<DetalleDis> detalleDisListOld = persistentItem.getDetalleDisList();
             List<DetalleDis> detalleDisListNew = item.getDetalleDisList();
+            List<HistorialItem> historialItemListOld = persistentItem.getHistorialItemList();
+            List<HistorialItem> historialItemListNew = item.getHistorialItemList();
+            List<String> illegalOrphanMessages = null;
+            for (HistorialItem historialItemListOldHistorialItem : historialItemListOld) {
+                if (!historialItemListNew.contains(historialItemListOldHistorialItem)) {
+                    if (illegalOrphanMessages == null) {
+                        illegalOrphanMessages = new ArrayList<String>();
+                    }
+                    illegalOrphanMessages.add("You must retain HistorialItem " + historialItemListOldHistorialItem + " since its item field is not nullable.");
+                }
+            }
+            if (illegalOrphanMessages != null) {
+                throw new IllegalOrphanException(illegalOrphanMessages);
+            }
             List<DetalleSub> attachedDetalleSubListNew = new ArrayList<DetalleSub>();
             for (DetalleSub detalleSubListNewDetalleSubToAttach : detalleSubListNew) {
                 detalleSubListNewDetalleSubToAttach = em.getReference(detalleSubListNewDetalleSubToAttach.getClass(), detalleSubListNewDetalleSubToAttach.getId());
@@ -113,6 +141,13 @@ public class ItemJpaController implements Serializable {
             }
             detalleDisListNew = attachedDetalleDisListNew;
             item.setDetalleDisList(detalleDisListNew);
+            List<HistorialItem> attachedHistorialItemListNew = new ArrayList<HistorialItem>();
+            for (HistorialItem historialItemListNewHistorialItemToAttach : historialItemListNew) {
+                historialItemListNewHistorialItemToAttach = em.getReference(historialItemListNewHistorialItemToAttach.getClass(), historialItemListNewHistorialItemToAttach.getId());
+                attachedHistorialItemListNew.add(historialItemListNewHistorialItemToAttach);
+            }
+            historialItemListNew = attachedHistorialItemListNew;
+            item.setHistorialItemList(historialItemListNew);
             item = em.merge(item);
             for (DetalleSub detalleSubListOldDetalleSub : detalleSubListOld) {
                 if (!detalleSubListNew.contains(detalleSubListOldDetalleSub)) {
@@ -148,6 +183,17 @@ public class ItemJpaController implements Serializable {
                     }
                 }
             }
+            for (HistorialItem historialItemListNewHistorialItem : historialItemListNew) {
+                if (!historialItemListOld.contains(historialItemListNewHistorialItem)) {
+                    Item oldItemOfHistorialItemListNewHistorialItem = historialItemListNewHistorialItem.getItem();
+                    historialItemListNewHistorialItem.setItem(item);
+                    historialItemListNewHistorialItem = em.merge(historialItemListNewHistorialItem);
+                    if (oldItemOfHistorialItemListNewHistorialItem != null && !oldItemOfHistorialItemListNewHistorialItem.equals(item)) {
+                        oldItemOfHistorialItemListNewHistorialItem.getHistorialItemList().remove(historialItemListNewHistorialItem);
+                        oldItemOfHistorialItemListNewHistorialItem = em.merge(oldItemOfHistorialItemListNewHistorialItem);
+                    }
+                }
+            }
             em.getTransaction().commit();
         } catch (Exception ex) {
             String msg = ex.getLocalizedMessage();
@@ -165,7 +211,7 @@ public class ItemJpaController implements Serializable {
         }
     }
 
-    public void destroy(Integer id) throws NonexistentEntityException {
+    public void destroy(Integer id) throws IllegalOrphanException, NonexistentEntityException {
         EntityManager em = null;
         try {
             em = getEntityManager();
@@ -176,6 +222,17 @@ public class ItemJpaController implements Serializable {
                 item.getCod();
             } catch (EntityNotFoundException enfe) {
                 throw new NonexistentEntityException("The item with id " + id + " no longer exists.", enfe);
+            }
+            List<String> illegalOrphanMessages = null;
+            List<HistorialItem> historialItemListOrphanCheck = item.getHistorialItemList();
+            for (HistorialItem historialItemListOrphanCheckHistorialItem : historialItemListOrphanCheck) {
+                if (illegalOrphanMessages == null) {
+                    illegalOrphanMessages = new ArrayList<String>();
+                }
+                illegalOrphanMessages.add("This Item (" + item + ") cannot be destroyed since the HistorialItem " + historialItemListOrphanCheckHistorialItem + " in its historialItemList field has a non-nullable item field.");
+            }
+            if (illegalOrphanMessages != null) {
+                throw new IllegalOrphanException(illegalOrphanMessages);
             }
             List<DetalleSub> detalleSubList = item.getDetalleSubList();
             for (DetalleSub detalleSubListDetalleSub : detalleSubList) {

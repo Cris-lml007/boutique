@@ -4,18 +4,18 @@
  */
 package model;
 
+import com.mycompany.boutique.HistorialItem;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.List;
 import javax.persistence.Basic;
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
@@ -49,13 +49,16 @@ public class Item implements Serializable {
     private BigDecimal precio;
     @Column(name = "DESCRIPCION", length = 255)
     private String descripcion;
-    @JoinColumn(name = "CATEGORIA", referencedColumnName = "ID")
-    @ManyToOne(fetch = FetchType.LAZY)
-    private Categoria categoria;
+    @Column(name = "TIPO")
+    private Integer tipo;
+    @Column(name = "ACTIVO")
+    private Integer activo;
     @OneToMany(mappedBy = "producto", fetch = FetchType.LAZY)
     private List<DetalleSub> detalleSubList;
     @OneToMany(mappedBy = "producto", fetch = FetchType.LAZY)
     private List<DetalleDis> detalleDisList;
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "item", fetch = FetchType.LAZY)
+    private List<HistorialItem> historialItemList;    
     
     @Transient
     int mode=0;
@@ -157,12 +160,28 @@ public class Item implements Serializable {
         }
     }
 
-    public Categoria getCategoria() {
-        return categoria;
+    public Integer getTipo() {
+        return tipo;
     }
 
-    public void setCategoria(Categoria categoria) {
-        this.categoria = categoria;
+    public void setTipo(Integer tipo) {
+        this.tipo = tipo;
+    }
+
+    public Integer getActivo() {
+        return activo;
+    }
+
+    public void setActivo(Integer activo) {
+        this.activo = activo;
+    }
+
+    public List<HistorialItem> getHistorialItemList() {
+        return historialItemList;
+    }
+
+    public void setHistorialItemList(List<HistorialItem> historialItemList) {
+        this.historialItemList = historialItemList;
     }
     
 }

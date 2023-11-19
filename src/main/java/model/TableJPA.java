@@ -4,11 +4,10 @@
  */
 package model;
 
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.net.http.WebSocket;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.EventListener;
 import java.util.List;
 import javax.swing.event.EventListenerList;
 import javax.swing.event.TableModelEvent;
@@ -18,6 +17,7 @@ import javax.swing.table.TableModel;
 /**
  *
  * @author metallica
+ * @param <T> tipo de Objeto que manejara la clase Genererica
  */
 public class TableJPA<T> implements TableModel{
     
@@ -41,7 +41,7 @@ public class TableJPA<T> implements TableModel{
                 Method get=obj.getClass().getMethod("get"+name.substring(0,1).toUpperCase()+name.substring(1));
                 getters.add(get);
             }
-        }catch(Exception e){
+        }catch(NoSuchMethodException | SecurityException e){
             System.out.println("error al cargar lista de metodos para reflexion: "+e);
         }
     }
@@ -60,7 +60,7 @@ public class TableJPA<T> implements TableModel{
                 Method get=obj.getClass().getMethod("get"+name.substring(0,1).toUpperCase()+name.substring(1));
                 getters.add(get);
             }
-        }catch(Exception e){
+        }catch(IllegalAccessException | InstantiationException | NoSuchMethodException | SecurityException e){
             System.out.println("error al cargar lista de metodos para reflexion: "+e);
         }
     }
@@ -143,7 +143,7 @@ public class TableJPA<T> implements TableModel{
         try{
             Method getterMethod = getters.get(i1);
             return getterMethod.invoke(obj);
-        }catch(Exception e){
+        }catch(IllegalAccessException | IllegalArgumentException | InvocationTargetException e){
             System.out.println("error al hacer la reflexion: "+e);
             return null;
         }
@@ -198,6 +198,7 @@ public class TableJPA<T> implements TableModel{
     
     protected void notifyTableCellUpdated(int row, int column) {
         TableModelEvent e = new TableModelEvent(this, row, row, column);
+        notifyTableChanged(e);
     }
     /////////////////////////////////////
 }

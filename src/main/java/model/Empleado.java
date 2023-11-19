@@ -4,9 +4,11 @@
  */
 package model;
 
+import com.mycompany.boutique.HistorialItem;
 import java.io.Serializable;
 import java.util.List;
 import javax.persistence.Basic;
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
@@ -43,19 +45,23 @@ public class Empleado implements Serializable {
     private String apellido;
     @Column(name = "NOMBRE", length = 30)
     private String nombre;
-    @Column(name = "ROL")
-    @Enumerated(EnumType.ORDINAL)
-    private Rol rol;
     @Column(name = "CONTRASE\u00d1A", length = 32)
     private String contraseña;
     @Column(name = "USUARIO", length = 30)
     private String usuario;
+    @Column(name = "ROL")
+    @Enumerated(EnumType.ORDINAL)
+    private Rol rol;
+    @Column(name = "ACTIVO")
+    private Integer activo;
     @OneToMany(mappedBy = "empleado", fetch = FetchType.LAZY)
     private List<Subministro> subministroList;
     @OneToMany(mappedBy = "empleado", fetch = FetchType.LAZY)
     private List<Distribucion> distribucionList;
     @OneToMany(mappedBy = "encargado", fetch = FetchType.LAZY)
     private List<Distribucion> distribucionList1;
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "empleado", fetch = FetchType.LAZY)
+    private List<HistorialItem> historialItemList;
 
     public Empleado() {
     }
@@ -95,13 +101,6 @@ public class Empleado implements Serializable {
         this.nombre = nombre.toUpperCase();
     }
 
-    public Rol getRol() {
-        return rol;
-    }
-
-    public void setRol(Rol rol) {
-        this.rol = rol;
-    }
 
     public String getContraseña() {
         return contraseña;
@@ -166,6 +165,30 @@ public class Empleado implements Serializable {
     @Override
     public String toString() {
         return "model.Empleado[ ci=" + ci + " ]";
+    }
+
+    public Rol getRol() {
+        return rol;
+    }
+
+    public void setRol(Rol rol) {
+        this.rol = rol;
+    }
+
+    public Integer getActivo() {
+        return activo;
+    }
+
+    public void setActivo(Integer activo) {
+        this.activo = activo;
+    }
+
+    public List<HistorialItem> getHistorialItemList() {
+        return historialItemList;
+    }
+
+    public void setHistorialItemList(List<HistorialItem> historialItemList) {
+        this.historialItemList = historialItemList;
     }
     
 }

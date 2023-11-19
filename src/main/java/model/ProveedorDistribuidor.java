@@ -34,6 +34,7 @@ import javax.persistence.Transient;
     @NamedQuery(name = "ProveedorDistribuidor.findByTipo", query = "SELECT p FROM ProveedorDistribuidor p WHERE p.tipo = :tipo")})
 public class ProveedorDistribuidor implements Serializable {
 
+
     private static final long serialVersionUID = 1L;
     @Id
     @Basic(optional = false)
@@ -78,13 +79,6 @@ public class ProveedorDistribuidor implements Serializable {
         this.nombre = nombre.toUpperCase();
     }
 
-    public Tipo getTipo() {
-        return tipo;
-    }
-
-    public void setTipo(Tipo tipo) {
-        this.tipo = tipo;
-    }
 
     public List<Subministro> getSubministroList() {
         return subministroList;
@@ -155,6 +149,14 @@ public class ProveedorDistribuidor implements Serializable {
                 throw new AssertionError();
         }
         
+    }
+
+    public Tipo getTipo() {
+        return tipo;
+    }
+
+    public void setTipo(Tipo tipo) {
+        this.tipo = tipo;
     }
     
 }

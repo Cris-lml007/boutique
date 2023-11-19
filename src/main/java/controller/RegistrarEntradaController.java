@@ -4,8 +4,6 @@
  */
 package controller;
 
-import java.awt.event.FocusEvent;
-import java.awt.event.FocusListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.event.MouseEvent;
@@ -13,19 +11,11 @@ import java.awt.event.MouseListener;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
 import java.math.BigDecimal;
-import java.time.Instant;
-import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
 import java.util.List;
-import java.util.Vector;
 import javax.swing.DefaultComboBoxModel;
-import javax.swing.DefaultListModel;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.JTextField;
-import javax.swing.table.DefaultTableModel;
 import model.Almacen;
 import model.DetalleSub;
 import model.Empleado;
@@ -34,7 +24,6 @@ import model.ProveedorDistribuidor;
 import model.Subministro;
 import model.TableJPA;
 import persistent.Control;
-import view.DashboardView;
 import view.RegistrarEntradaView;
 import view.RegistrarItemView;
 import view.RegistrarPDView;
@@ -191,8 +180,8 @@ public class RegistrarEntradaController {
                 DetalleSub det=new DetalleSub();
                 det.setProducto(item);
                 det.setPrecio(BigDecimal.valueOf(Double.parseDouble(view.txtPrecio.getText())));
-                det.setCantidad(Integer.parseInt(view.txtCantidad.getText()));
-                det.setCantExis(Integer.parseInt(view.txtCantidad.getText()));
+                det.setCantidad(Integer.valueOf(view.txtCantidad.getText()));
+                det.setCantExis(Integer.valueOf(view.txtCantidad.getText()));
                 modelTable.addElement(det);
                 total+=(det.getPrecio().doubleValue()*det.getCantidad());
                 view.txtTotal.setText(total+"");
@@ -209,7 +198,7 @@ public class RegistrarEntradaController {
                 int x=view.tbItem.getSelectedRow();
                 int y=view.tbItem.getSelectedColumn();
                 if(view.tbItem.isCellEditable(x, y)){
-                    if(view.tbItem.getColumnName(y).toString().equals("Precio")){
+                    if(view.tbItem.getColumnName(y).equals("Precio")){
                         DetalleSub d=modelTable.getObject(x);
                         String t=JOptionPane.showInputDialog(view, "Precio: ");
                         if(t==null) return;
@@ -220,12 +209,12 @@ public class RegistrarEntradaController {
                         modelTable.update(d);
                         total+= d.getPrecio().doubleValue()*d.getCantidad();
                         view.txtTotal.setText(total+"");
-                    }else if(view.tbItem.getColumnName(y).toString().equals("Cantidad")){
+                    }else if(view.tbItem.getColumnName(y).equals("Cantidad")){
                         DetalleSub d=modelTable.getObject(x);
                         String t=JOptionPane.showInputDialog(view, "Cantidad: ");
                         if(t==null) return;
                         total-= d.getPrecio().doubleValue()*d.getCantidad();
-                        Integer cant = Integer.parseInt(t);
+                        Integer cant = Integer.valueOf(t);
                         d.setCantidad(cant);
                         d.setCantExis(cant);
                         modelTable.update(d);

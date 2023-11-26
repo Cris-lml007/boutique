@@ -5,7 +5,7 @@
 package view;
 
 import model.Pais;
-import model.Tipo;
+import model.TipoPD;
 import model.Localizacion;
 
 /**
@@ -189,7 +189,7 @@ public class RegistrarPDView extends javax.swing.JPanel {
     public javax.swing.JButton btnEliminarPD;
     public javax.swing.JButton btnGuardarPD;
     public javax.swing.JButton btnLimpiar;
-    public javax.swing.JComboBox<Tipo> cbTipo;
+    public javax.swing.JComboBox<TipoPD> cbTipo;
     public javax.swing.JComboBox<Localizacion> cpLocal;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;

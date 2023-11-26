@@ -9,6 +9,8 @@ import java.util.Date;
 import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -23,8 +25,6 @@ import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
-import model.Empleado;
-import model.Item;
 
 /**
  *
@@ -40,6 +40,13 @@ import model.Item;
     @NamedQuery(name = "HistorialItem.findByCampo", query = "SELECT h FROM HistorialItem h WHERE h.campo = :campo")})
 public class HistorialItem implements Serializable {
 
+    @Basic(optional = false)
+    @NotNull
+    @Size(min = 1, max = 15)
+    @Column(name = "ACCION", nullable = false, length = 15)
+    @Enumerated(EnumType.STRING)
+    private Estado accion;
+
     private static final long serialVersionUID = 1L;
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -51,11 +58,6 @@ public class HistorialItem implements Serializable {
     @Column(name = "FECHA", nullable = false)
     @Temporal(TemporalType.TIMESTAMP)
     private Date fecha;
-    @Basic(optional = false)
-    @NotNull
-    @Size(min = 1, max = 15)
-    @Column(name = "ACCION", nullable = false, length = 15)
-    private String accion;
     @Basic(optional = false)
     @NotNull
     @Size(min = 1, max = 12)
@@ -83,7 +85,7 @@ public class HistorialItem implements Serializable {
         this.id = id;
     }
 
-    public HistorialItem(Integer id, Date fecha, String accion, String campo) {
+    public HistorialItem(Integer id, Date fecha, Estado accion, String campo) {
         this.id = id;
         this.fecha = fecha;
         this.accion = accion;
@@ -106,13 +108,6 @@ public class HistorialItem implements Serializable {
         this.fecha = fecha;
     }
 
-    public String getAccion() {
-        return accion;
-    }
-
-    public void setAccion(String accion) {
-        this.accion = accion;
-    }
 
     public String getCampo() {
         return campo;
@@ -177,6 +172,14 @@ public class HistorialItem implements Serializable {
     @Override
     public String toString() {
         return "com.mycompany.boutique.HistorialItem[ id=" + id + " ]";
+    }
+
+    public Estado getAccion() {
+        return accion;
+    }
+
+    public void setAccion(Estado accion) {
+        this.accion = accion;
     }
     
 }

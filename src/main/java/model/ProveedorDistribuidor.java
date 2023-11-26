@@ -44,7 +44,7 @@ public class ProveedorDistribuidor implements Serializable {
     private String nombre;
     @Column(name = "TIPO")
     @Enumerated(EnumType.ORDINAL)
-    private Tipo tipo;
+    private TipoPD tipo;
     @OneToMany(mappedBy = "proveedor", fetch = FetchType.LAZY)
     private List<Subministro> subministroList;
     @OneToMany(mappedBy = "destino", fetch = FetchType.LAZY)
@@ -151,11 +151,11 @@ public class ProveedorDistribuidor implements Serializable {
         
     }
 
-    public Tipo getTipo() {
+    public TipoPD getTipo() {
         return tipo;
     }
 
-    public void setTipo(Tipo tipo) {
+    public void setTipo(TipoPD tipo) {
         this.tipo = tipo;
     }
     

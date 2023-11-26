@@ -23,9 +23,15 @@ public class LoginController {
     private Empleado emp;
     private Control control=new Control();
     
+    public static Empleado e;
+    
     public LoginController(LoginView view){
         this.vlogin=view;
         initAction();
+    }
+    
+    public static Empleado getCurrentEmpleado(){
+        return e;
     }
     
     
@@ -34,6 +40,7 @@ public class LoginController {
             @Override
             public void actionPerformed(ActionEvent ae) {
                 if((emp=control.empleado.login(vlogin.txtUser.getText(),new String(vlogin.pasPass.getPassword())))!=null){
+                    e=emp;
                     DashboardView v=new DashboardView();
                     DashboardController c=new DashboardController(v,emp);
                     v.setVisible(true);

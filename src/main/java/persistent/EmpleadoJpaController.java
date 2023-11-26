@@ -16,6 +16,7 @@ import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import model.Distribucion;
 import model.Empleado;
+import model.Estado;
 import model.HistorialItem;
 import model.Rol;
 import model.md5;
@@ -308,6 +309,18 @@ public class EmpleadoJpaController implements Serializable {
                 em.close();
             }
         }
+    }
+    
+    public List<Empleado> findEmpleadoEntities(boolean active){
+        if(active){
+            EntityManager e=getEntityManager();
+            List <Empleado> l=new ArrayList<>();
+            String sql="SELECT u FROM Empleado u WHERE u.activo = :p";
+            Query query=e.createQuery(sql);
+            query.setParameter("p", Estado.activo);
+            l=query.getResultList();
+            return l;
+        }else return findEmpleadoEntities();
     }
 
     public List<Empleado> findEmpleadoEntities() {

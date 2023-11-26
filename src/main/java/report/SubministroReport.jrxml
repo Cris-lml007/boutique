@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="SubministroReport" language="groovy" pageWidth="612" pageHeight="792" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="62ef4b39-934b-4762-8205-14e8dbe03482">
-	<property name="ireport.zoom" value="1.0"/>
-	<property name="ireport.x" value="0"/>
+	<property name="ireport.zoom" value="1.5"/>
+	<property name="ireport.x" value="82"/>
 	<property name="ireport.y" value="0"/>
 	<queryString>
 		<![CDATA[SELECT * FROM EMPLEADO;]]>
@@ -31,15 +31,19 @@
 		<band height="79" splitType="Stretch">
 			<staticText>
 				<reportElement x="189" y="27" width="183" height="23" uuid="e7c0ab46-b604-4812-9616-f0230385d6d3"/>
-				<textElement textAlignment="Justified">
+				<textElement textAlignment="Center">
 					<font size="14"/>
 				</textElement>
-				<text><![CDATA[Reporte de Subministros]]></text>
+				<text><![CDATA[ORDEN DE ENTRADA]]></text>
 			</staticText>
 			<textField pattern="dd/MM/yyyy">
-				<reportElement x="472" y="27" width="100" height="20" uuid="7508da6e-33ae-44db-9a18-4ea73844bf58"/>
+				<reportElement x="472" y="30" width="100" height="20" uuid="7508da6e-33ae-44db-9a18-4ea73844bf58"/>
 				<textFieldExpression><![CDATA[new java.util.Date()]]></textFieldExpression>
 			</textField>
+			<image>
+				<reportElement x="14" y="0" width="122" height="79" uuid="dd14c1c0-1399-450a-983e-ae26120e0968"/>
+				<imageExpression><![CDATA["/home/metallica/NetBeansProjects/boutique/src/main/resources/Asset/logoK12-black.png"]]></imageExpression>
+			</image>
 		</band>
 	</title>
 	<pageHeader>

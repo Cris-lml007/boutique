@@ -4,6 +4,8 @@
  */
 package view;
 
+import model.TipoItem;
+
 /**
  *
  * @author metallica
@@ -40,7 +42,7 @@ public class RegistrarItemView extends javax.swing.JPanel {
         jLabel4 = new javax.swing.JLabel();
         btnEliminar = new javax.swing.JButton();
         jLabel5 = new javax.swing.JLabel();
-        cbCategoria = new javax.swing.JComboBox<>();
+        cbTipo = new javax.swing.JComboBox<>();
 
         setBackground(new java.awt.Color(255, 255, 255));
 
@@ -52,7 +54,7 @@ public class RegistrarItemView extends javax.swing.JPanel {
                 {null, null, null, null}
             },
             new String [] {
-                "COD", "Nombre", "Precio", "Categoria"
+                "COD", "Nombre", "Precio", "Tipo"
             }
         ) {
             Class[] types = new Class [] {
@@ -96,7 +98,7 @@ public class RegistrarItemView extends javax.swing.JPanel {
         btnEliminar.setText("Eliminar");
 
         jLabel5.setForeground(new java.awt.Color(0, 0, 0));
-        jLabel5.setText("Categoria:");
+        jLabel5.setText("Tipo:");
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
@@ -129,11 +131,11 @@ public class RegistrarItemView extends javax.swing.JPanel {
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(jLabel2)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(txtPrecio, javax.swing.GroupLayout.PREFERRED_SIZE, 95, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(txtPrecio, javax.swing.GroupLayout.PREFERRED_SIZE, 120, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(jLabel5)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(cbCategoria, javax.swing.GroupLayout.PREFERRED_SIZE, 153, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                        .addComponent(cbTipo, javax.swing.GroupLayout.PREFERRED_SIZE, 153, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addContainerGap(48, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
@@ -150,7 +152,7 @@ public class RegistrarItemView extends javax.swing.JPanel {
                     .addComponent(jLabel2)
                     .addComponent(txtPrecio, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jLabel5)
-                    .addComponent(cbCategoria, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(cbTipo, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(18, 18, 18)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(jLabel3)
@@ -169,7 +171,7 @@ public class RegistrarItemView extends javax.swing.JPanel {
     public javax.swing.JButton btnEliminar;
     public javax.swing.JButton btnGuardar;
     public javax.swing.JButton btnLimpiar;
-    private javax.swing.JComboBox<String> cbCategoria;
+    public javax.swing.JComboBox<TipoItem> cbTipo;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;

@@ -41,8 +41,6 @@ public class Localizacion implements Serializable {
     @ManyToOne(fetch = FetchType.LAZY)
     private Pais pais;
     @OneToMany(mappedBy = "origen", fetch = FetchType.LAZY)
-    private List<Almacen> almacenList;
-    @OneToMany(mappedBy = "origen", fetch = FetchType.LAZY)
     private List<ProveedorDistribuidor> proveedorDistribuidorList;
 
     public Localizacion() {
@@ -80,14 +78,6 @@ public class Localizacion implements Serializable {
 
     public void setPais(Pais pais) {
         this.pais = pais;
-    }
-
-    public List<Almacen> getAlmacenList() {
-        return almacenList;
-    }
-
-    public void setAlmacenList(List<Almacen> almacenList) {
-        this.almacenList = almacenList;
     }
 
     public List<ProveedorDistribuidor> getProveedorDistribuidorList() {

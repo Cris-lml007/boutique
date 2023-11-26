@@ -14,9 +14,12 @@ import java.util.ArrayList;
 import java.util.List;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
+import javax.persistence.FlushModeType;
 import model.DetalleDis;
+import model.Estado;
 import model.HistorialItem;
 import model.Item;
+import model.TipoItem;
 import persistent.exceptions.IllegalOrphanException;
 import persistent.exceptions.NonexistentEntityException;
 
@@ -197,6 +200,7 @@ public class ItemJpaController implements Serializable {
             em.getTransaction().commit();
         } catch (Exception ex) {
             String msg = ex.getLocalizedMessage();
+            System.out.println("error de item: "+msg);
             if (msg == null || msg.length() == 0) {
                 Integer id = item.getCod();
                 if (findItem(id) == null) {
@@ -253,8 +257,40 @@ public class ItemJpaController implements Serializable {
         }
     }
 
-    public List<Item> findItemEntities() {
-        return findItemEntities(true, -1, -1);
+    public List<Item> findItemEntities(boolean active) {
+        if(!active) return findItemEntities(true, -1, -1);
+        else{
+            EntityManager e=getEntityManager();
+            List<Item> l = new ArrayList<>();
+            try{
+                Query query=e.createQuery("SELECT u FROM Item u WHERE u.activo = :a");
+                query.setParameter("a", Estado.activo);
+                l=query.getResultList();
+            }finally{
+                return l;
+            }
+        }
+    }
+    
+    public List<Item> findItemEntities(String name){
+        return findItemEntities(name,null);
+    }
+    
+    public List<Item> findItemEntities(String name,TipoItem type){
+        EntityManager e=getEntityManager();
+        List<Item> l = new ArrayList<>();
+        try{
+            String sql=type!=null ? 
+                    "SELECT u FROM Item u WHERE u.activo = :a and u.nombre LIKE :nombreP and u.tipo = :t": 
+                    "SELECT u FROM Item u WHERE u.activo = :a and u.nombre LIKE :nombreP";
+            Query query=e.createQuery(sql);
+            query.setParameter("a", Estado.activo);
+            query.setParameter("nombreP", name);
+            query.setParameter("t", type);
+            l=query.getResultList();
+        }finally{
+            return l;
+        }
     }
 
     public List<Item> findItemEntities(int maxResults, int firstResult) {

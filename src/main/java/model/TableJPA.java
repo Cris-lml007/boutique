@@ -29,21 +29,13 @@ public class TableJPA<T> implements TableModel{
     
     List<Method> getters=new ArrayList<>();
 
-    public TableJPA(List data,String [] columns,String []atribName,Boolean edit[]){
+    public TableJPA(List data,String [] columns,String []atribName,Boolean edit[],Class<T>o){
         this.list=data;
         this.atribName=Arrays.asList(atribName);
         this.columns=Arrays.asList(columns);
         this.canEdit=Arrays.asList(edit);
         listEvent=new EventListenerList();
-        T obj = list.get(0);
-        try{
-            for(String name : atribName){
-                Method get=obj.getClass().getMethod("get"+name.substring(0,1).toUpperCase()+name.substring(1));
-                getters.add(get);
-            }
-        }catch(NoSuchMethodException | SecurityException e){
-            System.out.println("error al cargar lista de metodos para reflexion: "+e);
-        }
+        loadMethod(o);
     }
     
     public TableJPA(String [] columns,String []atribName, Boolean edit[]){
@@ -51,6 +43,20 @@ public class TableJPA<T> implements TableModel{
         this.columns=Arrays.asList(columns);
         this.canEdit=Arrays.asList(edit);
         listEvent=new EventListenerList();
+    }
+    
+    public void setData(List<T> L) {
+        if (!this.list.isEmpty()) {
+            clear();
+        }
+        int firstRow = list.size();
+        this.list.addAll(L);
+        notifyTableRowsInserted(firstRow, list.size() - 1);
+    }
+    
+    public boolean areObject(Class<T> o){
+        if(list.contains(o)) return true;
+        else return false;
     }
     
     public void loadMethod(Class<T> o){
@@ -68,6 +74,12 @@ public class TableJPA<T> implements TableModel{
     public void addElement(T obj){
         this.list.add(obj);
         notifyTableRowsInserted(list.size()-1, list.size()-1);
+    }
+    
+    public void addRows(List<T> l){
+        int firstRow = list.size();
+        this.list.addAll(l);
+        notifyTableRowsInserted(firstRow, list.size()-1);
     }
     
     public void removeElement(Object obj){
@@ -138,7 +150,7 @@ public class TableJPA<T> implements TableModel{
     public Object getValueAt(int i, int i1) {
         //Object q= list.get(i);
         //return q.toString().split(" - ")[i1];
-        
+        if(list.isEmpty()) return null;
         T obj = list.get(i);
         try{
             Method getterMethod = getters.get(i1);
@@ -182,8 +194,12 @@ public class TableJPA<T> implements TableModel{
     }
 
     protected void notifyTableRowsInserted(int firstRow, int lastRow) {
-        TableModelEvent e = new TableModelEvent(this, firstRow, lastRow, TableModelEvent.ALL_COLUMNS, TableModelEvent.INSERT);
-        notifyTableChanged(e);
+        try{
+            TableModelEvent e = new TableModelEvent(this, firstRow, lastRow, TableModelEvent.ALL_COLUMNS, TableModelEvent.INSERT);
+            notifyTableChanged(e);
+        }catch(Exception er){
+            System.out.println("este es el error: "+er);
+        }
     }
     
     protected void notifyTableRowsUpdated(int frow,int lrow){

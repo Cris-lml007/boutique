@@ -11,6 +11,8 @@ import javax.persistence.Basic;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -32,8 +34,16 @@ import javax.persistence.Transient;
     @NamedQuery(name = "Item.findByCod", query = "SELECT i FROM Item i WHERE i.cod = :cod"),
     @NamedQuery(name = "Item.findByNombre", query = "SELECT i FROM Item i WHERE i.nombre = :nombre"),
     @NamedQuery(name = "Item.findByPrecio", query = "SELECT i FROM Item i WHERE i.precio = :precio"),
-    @NamedQuery(name = "Item.findByDescripcion", query = "SELECT i FROM Item i WHERE i.descripcion = :descripcion")})
+    @NamedQuery(name = "Item.findByDescripcion", query = "SELECT i FROM Item i WHERE i.descripcion = :descripcion"),
+    @NamedQuery(name = "Item.findbyCantidad", query = "SELECT i FROM Item i WHERE i.cantidad = :cantidad")})
 public class Item implements Serializable {
+
+    @Column(name = "TIPO")
+    @Enumerated(EnumType.ORDINAL)
+    private TipoItem tipo;
+    @Column(name = "ACTIVO")
+    @Enumerated(EnumType.ORDINAL)
+    private Estado activo=Estado.activo;
 
     private static final long serialVersionUID = 1L;
     @Id
@@ -48,10 +58,8 @@ public class Item implements Serializable {
     private BigDecimal precio;
     @Column(name = "DESCRIPCION", length = 255)
     private String descripcion;
-    @Column(name = "TIPO")
-    private Integer tipo;
-    @Column(name = "ACTIVO")
-    private Integer activo;
+    @Column(name = "CANTIDAD",updatable = true)
+    private int cantidad=0;
     @OneToMany(mappedBy = "producto", fetch = FetchType.LAZY)
     private List<DetalleSub> detalleSubList;
     @OneToMany(mappedBy = "producto", fetch = FetchType.LAZY)
@@ -63,6 +71,22 @@ public class Item implements Serializable {
     int mode=0;
 
     public Item() {
+    }
+    
+    public Item(Item i){
+        this.cod=i.cod;
+        this.nombre=i.nombre;
+        this.precio=i.precio;
+        this.descripcion=i.descripcion;
+        this.tipo=i.tipo;
+        this.activo=i.activo;
+        this.detalleSubList=i.detalleSubList;
+        this.detalleDisList=i.detalleDisList;
+        this.historialItemList=i.historialItemList;
+    }
+    
+    public static Item newInstance(Item i){
+        return new Item(i);
     }
 
     public Item(Integer cod) {
@@ -95,6 +119,14 @@ public class Item implements Serializable {
 
     public String getDescripcion() {
         return descripcion;
+    }
+
+    public int getCantidad() {
+        return cantidad;
+    }
+
+    public void setCantidad(int cantidad) {
+        this.cantidad = cantidad;
     }
 
     public void setDescripcion(String descripcion) {
@@ -159,21 +191,15 @@ public class Item implements Serializable {
         }
     }
 
-    public Integer getTipo() {
-        return tipo;
+    
+    public String getTipoName(){
+        return tipo.getDescripcion();
+    }
+    
+    public String getTipoDesc(){
+        return tipo.getDescripcion();
     }
 
-    public void setTipo(Integer tipo) {
-        this.tipo = tipo;
-    }
-
-    public Integer getActivo() {
-        return activo;
-    }
-
-    public void setActivo(Integer activo) {
-        this.activo = activo;
-    }
 
     public List<HistorialItem> getHistorialItemList() {
         return historialItemList;
@@ -181,6 +207,22 @@ public class Item implements Serializable {
 
     public void setHistorialItemList(List<HistorialItem> historialItemList) {
         this.historialItemList = historialItemList;
+    }
+
+    public TipoItem getTipo() {
+        return tipo;
+    }
+
+    public void setTipo(TipoItem tipo) {
+        this.tipo = tipo;
+    }
+
+    public Estado getActivo() {
+        return activo;
+    }
+
+    public void setActivo(Estado activo) {
+        this.activo = activo;
     }
     
 }

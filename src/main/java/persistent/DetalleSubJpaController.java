@@ -59,6 +59,7 @@ public class DetalleSubJpaController implements Serializable {
             }
             em.getTransaction().commit();
         } catch (Exception ex) {
+            System.out.println("hay un error: "+ex);
             if (findDetalleSub(detalleSub.getId()) != null) {
                 throw new PreexistingEntityException("DetalleSub " + detalleSub + " already exists.", ex);
             }

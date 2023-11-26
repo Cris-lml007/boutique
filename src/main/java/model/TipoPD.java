@@ -8,7 +8,7 @@ package model;
  *
  * @author metallica
  */
-public enum Tipo{
+public enum TipoPD{
     proveedor,
     planta,
     local,

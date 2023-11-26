@@ -6,8 +6,6 @@ package model;
 
 import java.io.Serializable;
 import java.text.SimpleDateFormat;
-import java.time.Instant;
-import java.time.LocalDate;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
@@ -48,13 +46,10 @@ public class Subministro implements Serializable {
     private Integer cod;
     @Basic(optional = false)
     @Column(name = "FECHA", nullable = false)
-    @Temporal(TemporalType.DATE)
+    @Temporal(TemporalType.TIMESTAMP)
     private Date fecha;
     @Column(name = "DESCRIPCION", length = 255)
     private String descripcion;
-    @JoinColumn(name = "ALMACEN", referencedColumnName = "COD")
-    @ManyToOne(fetch = FetchType.LAZY)
-    private Almacen almacen;
     @JoinColumn(name = "EMPLEADO", referencedColumnName = "CI")
     @ManyToOne(fetch = FetchType.LAZY)
     private Empleado empleado;
@@ -65,11 +60,6 @@ public class Subministro implements Serializable {
     private List<DetalleSub> detalleSubList;
 
     public Subministro() {
-        try{
-        fecha=new SimpleDateFormat("yyyy-MM-dd").parse(LocalDate.now().toString());
-        }catch(Exception e){
-            System.out.println("existe un error en la fecha: "+e);
-        }
     }
 
     public Subministro(Integer cod) {
@@ -89,8 +79,8 @@ public class Subministro implements Serializable {
         this.cod = cod;
     }
 
-    public Date getFecha() {
-        return fecha;
+    public String getFecha() {
+        return new SimpleDateFormat("dd-MM-yyyy HH:mm").format(fecha);
     }
 
     public void setFecha(Date fecha) {
@@ -105,14 +95,6 @@ public class Subministro implements Serializable {
         this.descripcion = descripcion;
     }
 
-    public Almacen getAlmacen() {
-        return almacen;
-    }
-
-    public void setAlmacen(Almacen almacen) {
-        this.almacen = almacen;
-    }
-
     public Empleado getEmpleado() {
         return empleado;
     }
@@ -123,6 +105,10 @@ public class Subministro implements Serializable {
 
     public ProveedorDistribuidor getProveedor() {
         return proveedor;
+    }
+    
+    public String getProveedorName(){
+        return proveedor.getNombre();
     }
 
     public void setProveedor(ProveedorDistribuidor proveedor) {

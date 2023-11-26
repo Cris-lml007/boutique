@@ -5,10 +5,14 @@
 package model;
 
 import java.io.Serializable;
+import java.math.BigDecimal;
+import javax.annotation.processing.Generated;
 import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
@@ -31,7 +35,8 @@ public class DetalleDis implements Serializable {
     private static final long serialVersionUID = 1L;
     @Id
     @Basic(optional = false)
-    @Column(name = "ID", nullable = false)
+    @Column(name = "ID", nullable = false, updatable = true)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
     @Column(name = "CANTIDAD")
     private Integer cantidad;
@@ -76,9 +81,21 @@ public class DetalleDis implements Serializable {
     public Item getProducto() {
         return producto;
     }
+    
+    public String getProductoName(){
+        return producto.getNombre();
+    }
+    
+    public BigDecimal getPrecio(){
+        return producto.getPrecio();
+    }
 
     public void setProducto(Item producto) {
         this.producto = producto;
+    }
+    
+    public Double getSubtotal(){
+        return getPrecio().doubleValue()*getCantidad();
     }
 
     @Override

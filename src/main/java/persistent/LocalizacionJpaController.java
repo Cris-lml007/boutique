@@ -10,13 +10,12 @@ import javax.persistence.EntityNotFoundException;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Root;
 import model.Pais;
-import model.Almacen;
+import model.ProveedorDistribuidor;
 import java.util.ArrayList;
 import java.util.List;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import model.Localizacion;
-import model.ProveedorDistribuidor;
 import persistent.exceptions.NonexistentEntityException;
 import persistent.exceptions.PreexistingEntityException;
 
@@ -36,9 +35,6 @@ public class LocalizacionJpaController implements Serializable {
     }
 
     public void create(Localizacion localizacion) throws PreexistingEntityException, Exception {
-        if (localizacion.getAlmacenList() == null) {
-            localizacion.setAlmacenList(new ArrayList<Almacen>());
-        }
         if (localizacion.getProveedorDistribuidorList() == null) {
             localizacion.setProveedorDistribuidorList(new ArrayList<ProveedorDistribuidor>());
         }
@@ -51,12 +47,6 @@ public class LocalizacionJpaController implements Serializable {
                 pais = em.getReference(pais.getClass(), pais.getCod());
                 localizacion.setPais(pais);
             }
-            List<Almacen> attachedAlmacenList = new ArrayList<Almacen>();
-            for (Almacen almacenListAlmacenToAttach : localizacion.getAlmacenList()) {
-                almacenListAlmacenToAttach = em.getReference(almacenListAlmacenToAttach.getClass(), almacenListAlmacenToAttach.getCod());
-                attachedAlmacenList.add(almacenListAlmacenToAttach);
-            }
-            localizacion.setAlmacenList(attachedAlmacenList);
             List<ProveedorDistribuidor> attachedProveedorDistribuidorList = new ArrayList<ProveedorDistribuidor>();
             for (ProveedorDistribuidor proveedorDistribuidorListProveedorDistribuidorToAttach : localizacion.getProveedorDistribuidorList()) {
                 proveedorDistribuidorListProveedorDistribuidorToAttach = em.getReference(proveedorDistribuidorListProveedorDistribuidorToAttach.getClass(), proveedorDistribuidorListProveedorDistribuidorToAttach.getCod());
@@ -67,15 +57,6 @@ public class LocalizacionJpaController implements Serializable {
             if (pais != null) {
                 pais.getLocalizacionList().add(localizacion);
                 pais = em.merge(pais);
-            }
-            for (Almacen almacenListAlmacen : localizacion.getAlmacenList()) {
-                Localizacion oldOrigenOfAlmacenListAlmacen = almacenListAlmacen.getOrigen();
-                almacenListAlmacen.setOrigen(localizacion);
-                almacenListAlmacen = em.merge(almacenListAlmacen);
-                if (oldOrigenOfAlmacenListAlmacen != null) {
-                    oldOrigenOfAlmacenListAlmacen.getAlmacenList().remove(almacenListAlmacen);
-                    oldOrigenOfAlmacenListAlmacen = em.merge(oldOrigenOfAlmacenListAlmacen);
-                }
             }
             for (ProveedorDistribuidor proveedorDistribuidorListProveedorDistribuidor : localizacion.getProveedorDistribuidorList()) {
                 Localizacion oldOrigenOfProveedorDistribuidorListProveedorDistribuidor = proveedorDistribuidorListProveedorDistribuidor.getOrigen();
@@ -107,21 +88,12 @@ public class LocalizacionJpaController implements Serializable {
             Localizacion persistentLocalizacion = em.find(Localizacion.class, localizacion.getCod());
             Pais paisOld = persistentLocalizacion.getPais();
             Pais paisNew = localizacion.getPais();
-            List<Almacen> almacenListOld = persistentLocalizacion.getAlmacenList();
-            List<Almacen> almacenListNew = localizacion.getAlmacenList();
             List<ProveedorDistribuidor> proveedorDistribuidorListOld = persistentLocalizacion.getProveedorDistribuidorList();
             List<ProveedorDistribuidor> proveedorDistribuidorListNew = localizacion.getProveedorDistribuidorList();
             if (paisNew != null) {
                 paisNew = em.getReference(paisNew.getClass(), paisNew.getCod());
                 localizacion.setPais(paisNew);
             }
-            List<Almacen> attachedAlmacenListNew = new ArrayList<Almacen>();
-            for (Almacen almacenListNewAlmacenToAttach : almacenListNew) {
-                almacenListNewAlmacenToAttach = em.getReference(almacenListNewAlmacenToAttach.getClass(), almacenListNewAlmacenToAttach.getCod());
-                attachedAlmacenListNew.add(almacenListNewAlmacenToAttach);
-            }
-            almacenListNew = attachedAlmacenListNew;
-            localizacion.setAlmacenList(almacenListNew);
             List<ProveedorDistribuidor> attachedProveedorDistribuidorListNew = new ArrayList<ProveedorDistribuidor>();
             for (ProveedorDistribuidor proveedorDistribuidorListNewProveedorDistribuidorToAttach : proveedorDistribuidorListNew) {
                 proveedorDistribuidorListNewProveedorDistribuidorToAttach = em.getReference(proveedorDistribuidorListNewProveedorDistribuidorToAttach.getClass(), proveedorDistribuidorListNewProveedorDistribuidorToAttach.getCod());
@@ -137,23 +109,6 @@ public class LocalizacionJpaController implements Serializable {
             if (paisNew != null && !paisNew.equals(paisOld)) {
                 paisNew.getLocalizacionList().add(localizacion);
                 paisNew = em.merge(paisNew);
-            }
-            for (Almacen almacenListOldAlmacen : almacenListOld) {
-                if (!almacenListNew.contains(almacenListOldAlmacen)) {
-                    almacenListOldAlmacen.setOrigen(null);
-                    almacenListOldAlmacen = em.merge(almacenListOldAlmacen);
-                }
-            }
-            for (Almacen almacenListNewAlmacen : almacenListNew) {
-                if (!almacenListOld.contains(almacenListNewAlmacen)) {
-                    Localizacion oldOrigenOfAlmacenListNewAlmacen = almacenListNewAlmacen.getOrigen();
-                    almacenListNewAlmacen.setOrigen(localizacion);
-                    almacenListNewAlmacen = em.merge(almacenListNewAlmacen);
-                    if (oldOrigenOfAlmacenListNewAlmacen != null && !oldOrigenOfAlmacenListNewAlmacen.equals(localizacion)) {
-                        oldOrigenOfAlmacenListNewAlmacen.getAlmacenList().remove(almacenListNewAlmacen);
-                        oldOrigenOfAlmacenListNewAlmacen = em.merge(oldOrigenOfAlmacenListNewAlmacen);
-                    }
-                }
             }
             for (ProveedorDistribuidor proveedorDistribuidorListOldProveedorDistribuidor : proveedorDistribuidorListOld) {
                 if (!proveedorDistribuidorListNew.contains(proveedorDistribuidorListOldProveedorDistribuidor)) {
@@ -205,11 +160,6 @@ public class LocalizacionJpaController implements Serializable {
             if (pais != null) {
                 pais.getLocalizacionList().remove(localizacion);
                 pais = em.merge(pais);
-            }
-            List<Almacen> almacenList = localizacion.getAlmacenList();
-            for (Almacen almacenListAlmacen : almacenList) {
-                almacenListAlmacen.setOrigen(null);
-                almacenListAlmacen = em.merge(almacenListAlmacen);
             }
             List<ProveedorDistribuidor> proveedorDistribuidorList = localizacion.getProveedorDistribuidorList();
             for (ProveedorDistribuidor proveedorDistribuidorListProveedorDistribuidor : proveedorDistribuidorList) {

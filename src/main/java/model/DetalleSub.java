@@ -29,8 +29,7 @@ import javax.persistence.Table;
     @NamedQuery(name = "DetalleSub.findAll", query = "SELECT d FROM DetalleSub d"),
     @NamedQuery(name = "DetalleSub.findById", query = "SELECT d FROM DetalleSub d WHERE d.id = :id"),
     @NamedQuery(name = "DetalleSub.findByPrecio", query = "SELECT d FROM DetalleSub d WHERE d.precio = :precio"),
-    @NamedQuery(name = "DetalleSub.findByCantidad", query = "SELECT d FROM DetalleSub d WHERE d.cantidad = :cantidad"),
-    @NamedQuery(name = "DetalleSub.findByCantExis", query = "SELECT d FROM DetalleSub d WHERE d.cantExis = :cantExis")})
+    @NamedQuery(name = "DetalleSub.findByCantidad", query = "SELECT d FROM DetalleSub d WHERE d.cantidad = :cantidad")})
 public class DetalleSub implements Serializable {
 
     private static final long serialVersionUID = 1L;
@@ -44,9 +43,7 @@ public class DetalleSub implements Serializable {
     private BigDecimal precio;
     @Column(name = "CANTIDAD")
     private Integer cantidad;
-    @Column(name = "CANT_EXIS")
-    private Integer cantExis;
-    @JoinColumn(name = "PRODUCTO", referencedColumnName = "COD")
+    @JoinColumn(name = "PRODUCTO", referencedColumnName = "COD",nullable = false)
     @ManyToOne(fetch = FetchType.LAZY)
     private Item producto;
     @JoinColumn(name = "SUBMINISTRO", referencedColumnName = "COD")
@@ -82,14 +79,6 @@ public class DetalleSub implements Serializable {
 
     public void setCantidad(Integer cantidad) {
         this.cantidad = cantidad;
-    }
-
-    public Integer getCantExis() {
-        return cantExis;
-    }
-
-    public void setCantExis(Integer cantExis) {
-        this.cantExis = cantExis;
     }
 
     public Item getProducto() {

@@ -10,34 +10,35 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
-import java.math.BigDecimal;
 import java.util.List;
+import java.util.Vector;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.JTextField;
-import model.DetalleSub;
+import model.DetalleDis;
+import model.Distribucion;
 import model.Empleado;
 import model.Item;
 import model.ProveedorDistribuidor;
-import model.Subministro;
 import model.TableJPA;
 import persistent.Control;
 import view.BuscarItemView;
-import view.RegistrarEntradaView;
 import view.RegistrarItemView;
 import view.RegistrarPDView;
+import view.RegistrarSalidaView;
 
 /**
  *
  * @author metallica
  */
-public class RegistrarEntradaController {
+public class RegistrarSalidaController {
     Control control=new Control();
-    RegistrarEntradaView view;
-    TableJPA<DetalleSub> modelTable;
+    RegistrarSalidaView view;
+    TableJPA<DetalleDis> modelTable;
     DefaultComboBoxModel modelPD;
     DefaultComboBoxModel modelItem;
+    DefaultComboBoxModel modelEmpleado;
     ProveedorDistribuidor pd;
     Item item;
     Empleado emp;
@@ -45,15 +46,15 @@ public class RegistrarEntradaController {
     JTextField editItem;
     double total=0;
 
-    public RegistrarEntradaController(RegistrarEntradaView v,Empleado e) {
+    public RegistrarSalidaController(RegistrarSalidaView v,Empleado e) {
         this.emp=e;
         this.view=v;
         editPD=(JTextField) view.cbNombre.getEditor().getEditorComponent();
         editItem=(JTextField) view.cbItem.getEditor().getEditorComponent();
         loadData();
         initAction();
-        modelTable=new TableJPA(new String[]{"Producto","Cantidad","Precio","Subtotal"},new String[]{"productoName","cantidad","precio","subtotal"}, new Boolean[]{false,true,true,false});
-        modelTable.loadMethod(DetalleSub.class);
+        modelTable=new TableJPA(new String[]{"Producto","Cantidad","Precio","Subtotal"},new String[]{"productoName","cantidad","precio","subtotal"}, new Boolean[]{false,true,false,false});
+        modelTable.loadMethod(DetalleDis.class);
         view.tbItem.setModel(modelTable);
     }
     
@@ -113,10 +114,10 @@ public class RegistrarEntradaController {
             }
         });
         
-        view.cbNombre.addActionListener((ae -> {
+        view.cbNombre.addActionListener((ae) -> {
             pd=(ProveedorDistribuidor) view.cbNombre.getSelectedItem();
-            if( pd!=null) view.txtNIT.setText(pd.getCod().toString());
-        }));
+            if(pd!=null) view.txtNIT.setText(pd.getCod().toString());
+        });
         
         view.btnLimpiar.addActionListener((ae -> {
             pd=null;
@@ -143,6 +144,7 @@ public class RegistrarEntradaController {
                     if(((Item)modelItem.getElementAt(i)).getCod().toString().equals(view.txtCodItem.getText())){
                         item=(Item)modelItem.getElementAt(i);
                         view.cbItem.setSelectedItem(item);
+                        view.txtPrecio.setText(item.getPrecio().toString());
                         return;
                     }
                 }
@@ -163,6 +165,7 @@ public class RegistrarEntradaController {
                             item=(Item)modelItem.getElementAt(i);
                             view.cbItem.setSelectedItem(item);
                             view.txtCodItem.setText(item.getCod().toString());
+                            view.txtPrecio.setText(item.getPrecio().toString());
                             return;
                         }
                     }
@@ -181,32 +184,42 @@ public class RegistrarEntradaController {
             }
         });
         
-        view.cbItem.addActionListener((ae -> {
-            item=(Item) view.cbItem.getSelectedItem();
-            if(item!=null) view.txtCodItem.setText(item.getCod().toString());
-        }));
+        view.cbItem.addActionListener((ae) -> {
+            item= (Item) view.cbItem.getSelectedItem();
+            if(item!=null){
+                view.txtCodItem.setText(item.getCod().toString());
+                view.txtPrecio.setText(item.getPrecio().toString());
+            }
+        });
         
-        view.btnAñadir.addActionListener((ae -> {
+        view.btnAñadir.addActionListener(((ae) -> {
             if(existItem()){
                 for(int i=0;i<modelTable.getRowCount();i++){
-                    Item it=modelTable.getObject(i).getProducto();
-                    if(it.equals(item)){
+                    Item it= ((DetalleDis)modelTable.getObject(i)).getProducto();
+                    if(item.equals(it)){
                         JOptionPane.showMessageDialog(view, "Este producto ya fue agregado");
                         return;
                     }
                 }
-                DetalleSub det=new DetalleSub();
+                if(Integer.parseInt(view.txtCantidad.getText())<=0){
+                    JOptionPane.showMessageDialog(view, "No se permite 0 o numeros negativos");
+                    return;
+                }
+                if(item.getCantidad()<Integer.parseInt(view.txtCantidad.getText())){
+                    JOptionPane.showMessageDialog(view, "Cantidad Solicitada inexistente, cantidad disponible: "+item.getCantidad());
+                    return;
+                }
+                DetalleDis det=new DetalleDis();
                 det.setProducto(item);
-                det.setPrecio(BigDecimal.valueOf(Double.parseDouble(view.txtPrecio.getText())));
+                det.setCantidad(Integer.valueOf(view.txtCantidad.getText()));
                 det.setCantidad(Integer.valueOf(view.txtCantidad.getText()));
                 modelTable.addElement(det);
-                total+=(det.getPrecio().doubleValue()*det.getCantidad());
+                total+=(item.getPrecio().doubleValue()*det.getCantidad());
                 view.txtTotal.setText(total+"");
                 view.txtCodItem.setText(null);
                 view.cbItem.setSelectedItem(null);
                 view.txtPrecio.setText(null);
                 view.txtCantidad.setText(null);
-                item=null;
             }
         }));
         
@@ -216,26 +229,19 @@ public class RegistrarEntradaController {
                 int x=view.tbItem.getSelectedRow();
                 int y=view.tbItem.getSelectedColumn();
                 if(view.tbItem.isCellEditable(x, y)){
-                    if(view.tbItem.getColumnName(y).equals("Precio")){
-                        DetalleSub d=modelTable.getObject(x);
-                        String t=JOptionPane.showInputDialog(view, "Precio: ");
-                        if(t==null) return;
-                        double precio = Double.parseDouble(t);
-                        BigDecimal p=BigDecimal.valueOf(precio);
-                        total-= d.getPrecio().doubleValue()*d.getCantidad();
-                        d.setPrecio(p);
-                        modelTable.update(d);
-                        total+= d.getPrecio().doubleValue()*d.getCantidad();
-                        view.txtTotal.setText(total+"");
-                    }else if(view.tbItem.getColumnName(y).equals("Cantidad")){
-                        DetalleSub d=modelTable.getObject(x);
+                    if(view.tbItem.getColumnName(y).equals("Cantidad")){
+                        DetalleDis d=modelTable.getObject(x);
                         String t=JOptionPane.showInputDialog(view, "Cantidad: ");
                         if(t==null) return;
-                        total-= d.getPrecio().doubleValue()*d.getCantidad();
                         Integer cant = Integer.valueOf(t);
+                        if(cant<=0 || cant>d.getProducto().getCantidad()){
+                            JOptionPane.showMessageDialog(view, "Valor no permitido");
+                            return;
+                        }
+                        total-= d.getProducto().getPrecio().doubleValue()*d.getCantidad();
                         d.setCantidad(cant);
                         modelTable.update(d);
-                        total+= d.getPrecio().doubleValue()*d.getCantidad();
+                        total+= d.getProducto().getPrecio().doubleValue()*d.getCantidad();
                         view.txtTotal.setText(total+"");
                     }
                 }
@@ -259,43 +265,41 @@ public class RegistrarEntradaController {
         });
         
         view.btnQuitar.addActionListener((ae -> {
-            DetalleSub d= modelTable.getObject(view.tbItem.getSelectedRow());
-            total-= d.getPrecio().doubleValue()*d.getCantidad();
+            DetalleDis d= modelTable.getObject(view.tbItem.getSelectedRow());
+            total-= d.getProducto().getPrecio().doubleValue()*d.getCantidad();
             view.txtTotal.setText(total+"");
             modelTable.removeIndex(view.tbItem.getSelectedRow());
-            item=null;
         }));
         
         view.btnQuitarTodo.addActionListener((ae -> {
             modelTable.clear();
             total=0;
             view.txtTotal.setText("0");
-            item=null;
         }));
         
         view.btnFinalizar.addActionListener((ae -> {
-            Subministro sub=new Subministro();
-            sub.setProveedor(pd);
-            sub.setDescripcion(view.txtDesc.getText());
-            sub.setEmpleado(emp);
+            Distribucion dis=new Distribucion();
+            dis.setDestino(pd);
+            dis.setDescripcion(view.txtDesc.getText());
+            dis.setEmpleado(emp);
+            dis.setEncargado((Empleado) view.cbEncargado.getSelectedItem());
             try{
-                control.subministro.create(sub);
+                control.distribucion.create(dis);
+                System.out.println(dis.getId());
             }catch(Exception e){
                 System.out.println("hubo un error al crear subministro: "+e);
             }
             try{
-                for(DetalleSub i : modelTable.getAll()){
-                    i.setSubministro(sub);
+                for(DetalleDis i : modelTable.getAll()){
                     Item it=i.getProducto();
-                    it.setCantidad(it.getCantidad()+i.getCantidad());
-                    control.detalleSubministro.create(i);
+                    it.setCantidad(it.getCantidad()-i.getCantidad());
                     control.item.edit(it);
+                    i.setDistribucion(dis);
+                    control.detalleDistribucion.create(i);
+                    dis=control.distribucion.findDistribucion(dis.getId());
                 }
                 view.btnQuitarTodo.doClick();
                 view.btnLimpiar.doClick();
-                view.txtDesc.setText(null);
-                item=null;
-                pd=null;
             }catch(Exception e){
                 System.out.println("Hubo un error al crear detalle: "+e);
             }
@@ -326,6 +330,7 @@ public class RegistrarEntradaController {
                         item.changedModeToString(1);
                         view.txtCodItem.setText(item.getCod().toString());
                         view.cbItem.setSelectedItem(item);
+                        view.txtPrecio.setText(item.getPrecio().toString());
                     }
                 }
 
@@ -354,6 +359,8 @@ public class RegistrarEntradaController {
         modelItem=new DefaultComboBoxModel();
         List <ProveedorDistribuidor>l=control.proveedorDis.findProveedorDistribuidorEntities();
         List <Item> li=control.item.findItemEntities(true);
+        List <Empleado> lp=control.empleado.findEmpleadoEntities(true);
+        modelEmpleado=new DefaultComboBoxModel((Vector) lp);
         for(ProveedorDistribuidor i : l){
             i.changedModeToString(1);
             modelPD.addElement(i);
@@ -362,6 +369,8 @@ public class RegistrarEntradaController {
             i.changedModeToString(1);
             modelItem.addElement(i);
         }
+        item=null;
+        view.cbEncargado.setModel(modelEmpleado);
         view.cbNombre.setModel(modelPD);
         view.cbItem.setModel(modelItem);
         view.cbNombre.setSelectedItem(null);

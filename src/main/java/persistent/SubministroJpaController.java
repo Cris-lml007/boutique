@@ -5,21 +5,23 @@
 package persistent;
 
 import java.io.Serializable;
+import java.sql.Timestamp;
 import javax.persistence.Query;
 import javax.persistence.EntityNotFoundException;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Root;
-import model.Almacen;
 import model.Empleado;
 import model.ProveedorDistribuidor;
 import model.DetalleSub;
 import java.util.ArrayList;
+import java.util.Date;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import model.Subministro;
 import persistent.exceptions.NonexistentEntityException;
-import persistent.exceptions.PreexistingEntityException;
 
 /**
  *
@@ -36,7 +38,7 @@ public class SubministroJpaController implements Serializable {
         return emf.createEntityManager();
     }
 
-    public void create(Subministro subministro) throws PreexistingEntityException, Exception {
+    public void create(Subministro subministro) {
         if (subministro.getDetalleSubList() == null) {
             subministro.setDetalleSubList(new ArrayList<DetalleSub>());
         }
@@ -44,11 +46,6 @@ public class SubministroJpaController implements Serializable {
         try {
             em = getEntityManager();
             em.getTransaction().begin();
-            Almacen almacen = subministro.getAlmacen();
-            if (almacen != null) {
-                almacen = em.getReference(almacen.getClass(), almacen.getCod());
-                subministro.setAlmacen(almacen);
-            }
             Empleado empleado = subministro.getEmpleado();
             if (empleado != null) {
                 empleado = em.getReference(empleado.getClass(), empleado.getCi());
@@ -66,10 +63,6 @@ public class SubministroJpaController implements Serializable {
             }
             subministro.setDetalleSubList(attachedDetalleSubList);
             em.persist(subministro);
-            if (almacen != null) {
-                almacen.getSubministroList().add(subministro);
-                almacen = em.merge(almacen);
-            }
             if (empleado != null) {
                 empleado.getSubministroList().add(subministro);
                 empleado = em.merge(empleado);
@@ -88,11 +81,6 @@ public class SubministroJpaController implements Serializable {
                 }
             }
             em.getTransaction().commit();
-        } catch (Exception ex) {
-            if (findSubministro(subministro.getCod()) != null) {
-                throw new PreexistingEntityException("Subministro " + subministro + " already exists.", ex);
-            }
-            throw ex;
         } finally {
             if (em != null) {
                 em.close();
@@ -106,18 +94,12 @@ public class SubministroJpaController implements Serializable {
             em = getEntityManager();
             em.getTransaction().begin();
             Subministro persistentSubministro = em.find(Subministro.class, subministro.getCod());
-            Almacen almacenOld = persistentSubministro.getAlmacen();
-            Almacen almacenNew = subministro.getAlmacen();
             Empleado empleadoOld = persistentSubministro.getEmpleado();
             Empleado empleadoNew = subministro.getEmpleado();
             ProveedorDistribuidor proveedorOld = persistentSubministro.getProveedor();
             ProveedorDistribuidor proveedorNew = subministro.getProveedor();
             List<DetalleSub> detalleSubListOld = persistentSubministro.getDetalleSubList();
             List<DetalleSub> detalleSubListNew = subministro.getDetalleSubList();
-            if (almacenNew != null) {
-                almacenNew = em.getReference(almacenNew.getClass(), almacenNew.getCod());
-                subministro.setAlmacen(almacenNew);
-            }
             if (empleadoNew != null) {
                 empleadoNew = em.getReference(empleadoNew.getClass(), empleadoNew.getCi());
                 subministro.setEmpleado(empleadoNew);
@@ -134,14 +116,6 @@ public class SubministroJpaController implements Serializable {
             detalleSubListNew = attachedDetalleSubListNew;
             subministro.setDetalleSubList(detalleSubListNew);
             subministro = em.merge(subministro);
-            if (almacenOld != null && !almacenOld.equals(almacenNew)) {
-                almacenOld.getSubministroList().remove(subministro);
-                almacenOld = em.merge(almacenOld);
-            }
-            if (almacenNew != null && !almacenNew.equals(almacenOld)) {
-                almacenNew.getSubministroList().add(subministro);
-                almacenNew = em.merge(almacenNew);
-            }
             if (empleadoOld != null && !empleadoOld.equals(empleadoNew)) {
                 empleadoOld.getSubministroList().remove(subministro);
                 empleadoOld = em.merge(empleadoOld);
@@ -204,11 +178,6 @@ public class SubministroJpaController implements Serializable {
             } catch (EntityNotFoundException enfe) {
                 throw new NonexistentEntityException("The subministro with id " + id + " no longer exists.", enfe);
             }
-            Almacen almacen = subministro.getAlmacen();
-            if (almacen != null) {
-                almacen.getSubministroList().remove(subministro);
-                almacen = em.merge(almacen);
-            }
             Empleado empleado = subministro.getEmpleado();
             if (empleado != null) {
                 empleado.getSubministroList().remove(subministro);
@@ -232,6 +201,46 @@ public class SubministroJpaController implements Serializable {
             }
         }
     }
+    
+    public List<Subministro>QuerySQL(String sql,Map<String,Object>parameters){
+        EntityManager em = getEntityManager();
+        List<Subministro>l=new ArrayList<>();
+        try{
+            Query query=em.createNativeQuery(sql,Subministro.class);
+            Iterator it = parameters.keySet().iterator();
+            while(it.hasNext()){
+                String key=it.next().toString();
+                System.out.println("la llave es: "+key + "= "+parameters.get(key));
+                query.setParameter(key, parameters.get(key));
+            }
+            l=query.getResultList();
+        }catch(Exception e){
+            System.out.println("error al buscar sql: "+e);
+        }finally{
+            return l;
+        }
+    }
+    
+    public List<Subministro>findSubministroDate(java.sql.Date a){
+        return findSubministroDate(a, a);
+    }
+    
+    public List<Subministro> findSubministroDate(java.sql.Date a,java.sql.Date b){
+        EntityManager em=getEntityManager();
+        List <Subministro> l =new ArrayList();
+        try{
+            String sql="SELECT u.* FROM SUBMINISTRO u WHERE DATE(u.FECHA) >= DATE( ?f1 ) AND DATE(u.FECHA) <= DATE( ?f2 )";
+            Query query=em.createNativeQuery(sql,Subministro.class);
+            query.setParameter("f1", a);
+            query.setParameter("f2",b);
+            l=query.getResultList();
+        }catch(Exception e){
+            System.out.println("hubo un error al recuperar por fecha: "+e);
+        }finally{
+            return l;
+        }
+    }
+    
 
     public List<Subministro> findSubministroEntities() {
         return findSubministroEntities(true, -1, -1);

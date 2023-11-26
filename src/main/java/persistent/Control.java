@@ -5,15 +5,9 @@
 package persistent;
 
 import java.util.List;
-import java.util.Properties;
-import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.Persistence;
-import model.Almacen;
-import model.Empleado;
-import model.Localizacion;
-import model.Pais;
-import model.Rol;
+import model.Item;
 
 /**
  *
@@ -21,7 +15,6 @@ import model.Rol;
  */
 public class Control {
     public EntityManagerFactory conexion;
-    public AlmacenJpaController almacen;
     //public DestinoJpaController destino;
     public DetalleDisJpaController detalleDistribucion;
     public DetalleSubJpaController detalleSubministro;
@@ -33,10 +26,10 @@ public class Control {
     //public ProveedorJpaController proveedor;
     public SubministroJpaController subministro;
     public ProveedorDistribuidorJpaController proveedorDis;
+    public HistorialItemJpaController historialItem;
 
     public Control() {
         conexion=Persistence.createEntityManagerFactory("JpaBoutique");
-        almacen=new AlmacenJpaController(conexion);
         detalleDistribucion=new DetalleDisJpaController(conexion);
         detalleSubministro=new DetalleSubJpaController(conexion);
         distribucion=new DistribucionJpaController(conexion);
@@ -46,11 +39,17 @@ public class Control {
         pais=new PaisJpaController(conexion);
         subministro=new SubministroJpaController(conexion);
         proveedorDis=new ProveedorDistribuidorJpaController(conexion);
+        historialItem=new HistorialItemJpaController(conexion);
     }        
     
     public static void main(String args []){
         Control a= new Control();
-        Empleado q=a.empleado.findEmpleado(7329034);//new Empleado(7329034,"Abalos","Cristian",Rol.gerente);
+        List<Item> i=a.item.findItemEntities("%TELA%");
+        System.out.println("el tamaño es: "+i.size());
+        for(Item q : i){
+            System.out.println("es: "+q);
+        }
+        /*Empleado q=a.empleado.findEmpleado(7329034);//new Empleado(7329034,"Abalos","Cristian",Rol.gerente);
         q.setUsuario("cris");
         q.setContraseña("12345");
         Pais p=a.pais.findPais("ARG");

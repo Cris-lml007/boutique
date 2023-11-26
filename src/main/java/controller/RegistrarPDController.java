@@ -20,7 +20,7 @@ import javax.swing.JTextField;
 import model.Localizacion;
 import model.ProveedorDistribuidor;
 import model.TableJPA;
-import model.Tipo;
+import model.TipoPD;
 import persistent.Control;
 import view.RegistrarLocalView;
 import view.RegistrarPDView;
@@ -41,10 +41,10 @@ public class RegistrarPDController {
     
     public RegistrarPDController(RegistrarPDView v){
         this.view=v;
-        view.cbTipo.addItem(Tipo.proveedor);
-        view.cbTipo.addItem(Tipo.planta);
-        view.cbTipo.addItem(Tipo.local);
-        view.cbTipo.addItem(Tipo.otros);
+        view.cbTipo.addItem(TipoPD.proveedor);
+        view.cbTipo.addItem(TipoPD.planta);
+        view.cbTipo.addItem(TipoPD.local);
+        view.cbTipo.addItem(TipoPD.otros);
         editComponent=(JTextField) view.cpLocal.getEditor().getEditorComponent();
         loadData();
         initAction();
@@ -139,7 +139,7 @@ public class RegistrarPDController {
                     pd.setCod(Integer.valueOf(view.txtNIT.getText()));
                     pd.setNombre(view.txtNombre.getText());
                     pd.setOrigen((Localizacion)view.cpLocal.getSelectedItem());
-                    pd.setTipo((Tipo) view.cbTipo.getSelectedItem());
+                    pd.setTipo((TipoPD) view.cbTipo.getSelectedItem());
                     if(verify) control.proveedorDis.edit(pd);
                     else control.proveedorDis.create(pd);
                     loadData();
@@ -167,7 +167,13 @@ public class RegistrarPDController {
     public final void loadData(){
         listLocal=control.localizacion.findLocalizacionEntities();
         List <ProveedorDistribuidor> l=control.proveedorDis.findProveedorDistribuidorEntities();
-        model=new TableJPA(l, new String[]{"NIT","Nombre","Origen","Tipo"},new String[]{"cod","nombre","origenName","tipo"}, new Boolean[]{false,false,false,false});
+        model=new TableJPA(
+                l,
+                new String[]{"NIT","Nombre","Origen","Tipo"},
+                new String[]{"cod","nombre","origenName","tipo"},
+                new Boolean[]{false,false,false,false},
+                ProveedorDistribuidor.class
+        );
         view.tbPD.setModel(model);
         
         modelCbLocal=new DefaultComboBoxModel((Vector) listLocal);

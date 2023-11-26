@@ -11,6 +11,7 @@ import view.RegistrarEntradaView;
 import view.RegistrarItemView;
 import view.RegistrarLocalView;
 import view.RegistrarPDView;
+import view.RegistrarSalidaView;
 import view.RegistrarView;
 
 /**
@@ -53,5 +54,11 @@ public class RegistrarController {
             new RegistrarEntradaController(v,empleado);
             w.callPanel(v, view);
         });
+        
+        view.btnRegistrarS.addActionListener((ae -> {
+            RegistrarSalidaView v=new RegistrarSalidaView();
+            new RegistrarSalidaController(v, empleado);
+            w.callPanel(v, view);
+        }));
     }
 }

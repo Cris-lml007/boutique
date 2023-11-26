@@ -35,6 +35,13 @@ import javax.persistence.Table;
     @NamedQuery(name = "Empleado.findByUsuario", query = "SELECT e FROM Empleado e WHERE e.usuario = :usuario")})
 public class Empleado implements Serializable {
 
+    @Column(name = "ROL")
+    @Enumerated(EnumType.ORDINAL)
+    private Rol rol;
+    @Column(name = "ACTIVO")
+    @Enumerated(EnumType.ORDINAL)
+    private Estado activo;
+
     private static final long serialVersionUID = 1L;
     @Id
     @Basic(optional = false)
@@ -48,11 +55,6 @@ public class Empleado implements Serializable {
     private String contraseña;
     @Column(name = "USUARIO", length = 30)
     private String usuario;
-    @Column(name = "ROL")
-    @Enumerated(EnumType.ORDINAL)
-    private Rol rol;
-    @Column(name = "ACTIVO")
-    private Integer activo;
     @OneToMany(mappedBy = "empleado", fetch = FetchType.LAZY)
     private List<Subministro> subministroList;
     @OneToMany(mappedBy = "empleado", fetch = FetchType.LAZY)
@@ -163,7 +165,17 @@ public class Empleado implements Serializable {
 
     @Override
     public String toString() {
-        return "model.Empleado[ ci=" + ci + " ]";
+        //return "model.Empleado[ ci=" + ci + " ]";
+        return apellido+" "+nombre;
+    }
+
+
+    public List<HistorialItem> getHistorialItemList() {
+        return historialItemList;
+    }
+
+    public void setHistorialItemList(List<HistorialItem> historialItemList) {
+        this.historialItemList = historialItemList;
     }
 
     public Rol getRol() {
@@ -174,20 +186,12 @@ public class Empleado implements Serializable {
         this.rol = rol;
     }
 
-    public Integer getActivo() {
+    public Estado getActivo() {
         return activo;
     }
 
-    public void setActivo(Integer activo) {
+    public void setActivo(Estado activo) {
         this.activo = activo;
-    }
-
-    public List<HistorialItem> getHistorialItemList() {
-        return historialItemList;
-    }
-
-    public void setHistorialItemList(List<HistorialItem> historialItemList) {
-        this.historialItemList = historialItemList;
     }
     
 }

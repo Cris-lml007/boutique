@@ -11,7 +11,8 @@ package model;
 public enum TipoItem {
     materiaPrima("Materia Prima"),
     mercaderia("Mercaderia"),
-    sinTipo("Sin Tipo");
+    sinTipo("Sin Tipo"),
+    Todo("Todo");
     
     private final String descripcion;
     

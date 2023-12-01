@@ -13,10 +13,13 @@ import model.ProveedorDistribuidor;
 import model.Empleado;
 import model.DetalleDis;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import model.Distribucion;
+import model.Subministro;
 import persistent.exceptions.NonexistentEntityException;
 import persistent.exceptions.PreexistingEntityException;
 
@@ -231,6 +234,43 @@ public class DistribucionJpaController implements Serializable {
             }
         }
     }
+    
+    public List<Distribucion>QuerySQL(String sql,Map<String,Object>parameters){
+        EntityManager em = getEntityManager();
+        List<Distribucion>l=new ArrayList<>();
+        try{
+            Query query=em.createNativeQuery(sql,Distribucion.class);
+            Iterator it = parameters.keySet().iterator();
+            while(it.hasNext()){
+                String key=it.next().toString();
+                System.out.println("la llave es: "+key + "= "+parameters.get(key));
+                query.setParameter(key, parameters.get(key));
+            }
+            l=query.getResultList();
+        }catch(Exception e){
+            System.out.println("error al buscar sql: "+e);
+        }finally{
+            return l;
+        }
+    }
+    
+    public List<Distribucion> findDistribucionDate(java.sql.Date a,java.sql.Date b){
+        EntityManager em=getEntityManager();
+        List <Distribucion> l =new ArrayList();
+        try{
+            String sql="SELECT u.* FROM DISTRIBUCION u WHERE DATE(u.FECHA) >= DATE( ?f1 ) AND DATE(u.FECHA) <= DATE( ?f2 )";
+            Query query=em.createNativeQuery(sql,Distribucion.class);
+            query.setParameter("f1", a);
+            query.setParameter("f2",b);
+            l=query.getResultList();
+        }catch(Exception e){
+            System.out.println("hubo un error al recuperar por fecha: "+e);
+        }finally{
+            return l;
+        }
+    }
+    
+    
 
     public List<Distribucion> findDistribucionEntities() {
         return findDistribucionEntities(true, -1, -1);

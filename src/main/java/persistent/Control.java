@@ -7,7 +7,9 @@ package persistent;
 import java.util.List;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.Persistence;
+import model.Empleado;
 import model.Item;
+import org.eclipse.persistence.config.QueryHints;
 
 /**
  *
@@ -40,7 +42,27 @@ public class Control {
         subministro=new SubministroJpaController(conexion);
         proveedorDis=new ProveedorDistribuidorJpaController(conexion);
         historialItem=new HistorialItemJpaController(conexion);
-    }        
+    }
+    
+    public long totalSubministroByEmpleado(Empleado e){
+        return (long) subministro.getEntityManager().createNamedQuery("Subministro.totalByEmpleado")
+                .setParameter("emp", e)
+                .setHint(QueryHints.READ_ONLY, true)
+                .getSingleResult();
+    }
+    
+    public long totalDistribucionByEmpleado(Empleado e){
+        return (long) distribucion.getEntityManager().createNamedQuery("Distribucion.totalByEmpleado")
+                .setParameter("emp", e)
+                .setHint(QueryHints.READ_ONLY, true)
+                .getSingleResult();
+    }
+    
+    public List<Item> itemExisting(){
+        return item.getEntityManager().createNamedQuery("Item.findByCantidadExisting")
+                .setHint(QueryHints.READ_ONLY, true)
+                .getResultList();
+    }
     
     public static void main(String args []){
         Control a= new Control();

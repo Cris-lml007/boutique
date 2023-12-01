@@ -11,11 +11,14 @@ import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Root;
 import model.DetalleSub;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.FlushModeType;
 import model.DetalleDis;
+import model.Distribucion;
 import model.Estado;
 import model.HistorialItem;
 import model.Item;
@@ -254,6 +257,25 @@ public class ItemJpaController implements Serializable {
             if (em != null) {
                 em.close();
             }
+        }
+    }
+
+    public List<Item>QuerySQL(String sql,Map<String,Object>parameters){
+        EntityManager em = getEntityManager();
+        List<Item>l=new ArrayList<>();
+        try{
+            Query query=em.createNativeQuery(sql,Item.class);
+            Iterator it = parameters.keySet().iterator();
+            while(it.hasNext()){
+                String key=it.next().toString();
+                System.out.println("la llave es: "+key + "= "+parameters.get(key));
+                query.setParameter(key, parameters.get(key));
+            }
+            l=query.getResultList();
+        }catch(Exception e){
+            System.out.println("error al buscar sql: "+e);
+        }finally{
+            return l;
         }
     }
 

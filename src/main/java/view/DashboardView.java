@@ -152,10 +152,10 @@ public class DashboardView extends javax.swing.JFrame {
         );
         pnContenidoLayout.setVerticalGroup(
             pnContenidoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 650, Short.MAX_VALUE)
+            .addGap(0, 655, Short.MAX_VALUE)
         );
 
-        pnFondo.add(pnContenido, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 40, 870, 650));
+        pnFondo.add(pnContenido, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 40, 870, 655));
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);

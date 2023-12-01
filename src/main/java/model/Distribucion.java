@@ -5,6 +5,7 @@
 package model;
 
 import java.io.Serializable;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 import javax.persistence.Basic;
@@ -33,7 +34,8 @@ import javax.persistence.TemporalType;
     @NamedQuery(name = "Distribucion.findAll", query = "SELECT d FROM Distribucion d"),
     @NamedQuery(name = "Distribucion.findById", query = "SELECT d FROM Distribucion d WHERE d.id = :id"),
     @NamedQuery(name = "Distribucion.findByFecha", query = "SELECT d FROM Distribucion d WHERE d.fecha = :fecha"),
-    @NamedQuery(name = "Distribucion.findByDescripcion", query = "SELECT d FROM Distribucion d WHERE d.descripcion = :descripcion")})
+    @NamedQuery(name = "Distribucion.findByDescripcion", query = "SELECT d FROM Distribucion d WHERE d.descripcion = :descripcion"),
+    @NamedQuery(name = "Distribucion.totalByEmpleado",query = "SELECT COUNT(d) FROM Distribucion d WHERE d.empleado = :emp")})
 public class Distribucion implements Serializable {
 
     private static final long serialVersionUID = 1L;
@@ -80,8 +82,8 @@ public class Distribucion implements Serializable {
         this.id = id;
     }
 
-    public Date getFecha() {
-        return fecha;
+    public String getFecha() {
+        return new SimpleDateFormat("dd-MM-yyyy HH:mm").format(fecha);
     }
 
     public void setFecha(Date fecha) {
@@ -102,6 +104,10 @@ public class Distribucion implements Serializable {
 
     public void setDetalleDisList(List<DetalleDis> detalleDisList) {
         this.detalleDisList = detalleDisList;
+    }
+    
+    public String getDestinoName(){
+        return destino.getNombre();
     }
 
     public ProveedorDistribuidor getDestino() {

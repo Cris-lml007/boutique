@@ -35,7 +35,8 @@ import javax.persistence.Transient;
     @NamedQuery(name = "Item.findByNombre", query = "SELECT i FROM Item i WHERE i.nombre = :nombre"),
     @NamedQuery(name = "Item.findByPrecio", query = "SELECT i FROM Item i WHERE i.precio = :precio"),
     @NamedQuery(name = "Item.findByDescripcion", query = "SELECT i FROM Item i WHERE i.descripcion = :descripcion"),
-    @NamedQuery(name = "Item.findbyCantidad", query = "SELECT i FROM Item i WHERE i.cantidad = :cantidad")})
+    @NamedQuery(name = "Item.findByCantidad", query = "SELECT i FROM Item i WHERE i.cantidad = :cantidad"),
+    @NamedQuery(name = "Item.findByCantidadExisting", query = "SELECT i FROM Item i WHERE i.cantidad > 0")})
 public class Item implements Serializable {
 
     @Column(name = "TIPO")

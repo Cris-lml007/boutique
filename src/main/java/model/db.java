@@ -19,7 +19,7 @@ public class db {
     private final String user="root";
     private final String password="";
     private final String database="boutique";
-    protected Connection conect=null;
+    protected static Connection conect=null;
     
     
     public db(){
@@ -29,6 +29,10 @@ public class db {
         }catch(SQLException e){
             System.out.println("error al conectar:"+e);
         }
+    }
+    
+    public static Connection getConection(){
+        return conect;
     }
     
     public boolean queryInput(String sql){

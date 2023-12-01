@@ -21,6 +21,7 @@ import javax.persistence.ManyToOne;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
+import javax.persistence.QueryHint;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
@@ -35,7 +36,8 @@ import javax.persistence.TemporalType;
     @NamedQuery(name = "Subministro.findAll", query = "SELECT s FROM Subministro s"),
     @NamedQuery(name = "Subministro.findByCod", query = "SELECT s FROM Subministro s WHERE s.cod = :cod"),
     @NamedQuery(name = "Subministro.findByFecha", query = "SELECT s FROM Subministro s WHERE s.fecha = :fecha"),
-    @NamedQuery(name = "Subministro.findByDescripcion", query = "SELECT s FROM Subministro s WHERE s.descripcion = :descripcion")})
+    @NamedQuery(name = "Subministro.findByDescripcion", query = "SELECT s FROM Subministro s WHERE s.descripcion = :descripcion"),
+    @NamedQuery(name = "Subministro.totalByEmpleado",query = "SELECT COUNT(s) FROM Subministro s WHERE s.empleado = :emp")})
 public class Subministro implements Serializable {
 
     private static final long serialVersionUID = 1L;
@@ -58,7 +60,7 @@ public class Subministro implements Serializable {
     private ProveedorDistribuidor proveedor;
     @OneToMany(mappedBy = "subministro", fetch = FetchType.LAZY)
     private List<DetalleSub> detalleSubList;
-
+    
     public Subministro() {
     }
 

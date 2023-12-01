@@ -103,9 +103,9 @@ public class Empleado implements Serializable {
     }
 
 
-    public String getContraseña() {
+    /*public String getContraseña() {
         return contraseña;
-    }
+    }*/
 
     public void setContraseña(String contraseña) {
         this.contraseña = md5.getMD5Hash(contraseña);
@@ -117,6 +117,10 @@ public class Empleado implements Serializable {
 
     public void setUsuario(String usuario) {
         this.usuario = usuario;
+    }
+    
+    public boolean equalContraseña(String pass){
+        return contraseña.equals(pass) ? true : false;
     }
 
     public List<Subministro> getSubministroList() {
@@ -188,6 +192,10 @@ public class Empleado implements Serializable {
 
     public Estado getActivo() {
         return activo;
+    }
+    
+    public String getActivoName(){
+        return activo.getEstadoEmpleado();
     }
 
     public void setActivo(Estado activo) {

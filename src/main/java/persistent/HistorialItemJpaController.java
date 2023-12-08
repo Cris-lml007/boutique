@@ -5,7 +5,10 @@
 package persistent;
 
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.Query;
@@ -190,6 +193,45 @@ public class HistorialItemJpaController implements Serializable {
             return ((Long) q.getSingleResult()).intValue();
         } finally {
             em.close();
+        }
+    }
+    
+    public List<HistorialItem>QuerySQL(String sql,Map<String,Object>parameters){
+        EntityManager em = getEntityManager();
+        List<HistorialItem>l=new ArrayList<>();
+        try{
+            Query query=em.createNativeQuery(sql,HistorialItem.class);
+            Iterator it = parameters.keySet().iterator();
+            while(it.hasNext()){
+                String key=it.next().toString();
+                System.out.println("la llave es: "+key + "= "+parameters.get(key));
+                query.setParameter(key, parameters.get(key));
+            }
+            l=query.getResultList();
+        }catch(Exception e){
+            System.out.println("error al buscar sql: "+e);
+        }finally{
+            return l;
+        }
+    }
+    
+    public List<HistorialItem>findHistorialDate(java.sql.Date a){
+        return findHistorialDate(a, a);
+    }
+    
+    public List<HistorialItem> findHistorialDate(java.sql.Date a,java.sql.Date b){
+        EntityManager em=getEntityManager();
+        List <HistorialItem> l =new ArrayList();
+        try{
+            String sql="SELECT u.* FROM HISTORIAL_ITEM u WHERE DATE(u.FECHA) >= DATE( ?f1 ) AND DATE(u.FECHA) <= DATE( ?f2 )";
+            Query query=em.createNativeQuery(sql,HistorialItem.class);
+            query.setParameter("f1", a);
+            query.setParameter("f2",b);
+            l=query.getResultList();
+        }catch(Exception e){
+            System.out.println("hubo un error al recuperar por fecha: "+e);
+        }finally{
+            return l;
         }
     }
     

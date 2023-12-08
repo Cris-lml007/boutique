@@ -11,7 +11,9 @@ import java.awt.event.MouseListener;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
 import java.math.BigDecimal;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
@@ -22,6 +24,7 @@ import model.Item;
 import model.ProveedorDistribuidor;
 import model.Subministro;
 import model.TableJPA;
+import model.db;
 import persistent.Control;
 import view.BuscarItemView;
 import view.RegistrarEntradaView;
@@ -291,6 +294,10 @@ public class RegistrarEntradaController {
                     control.detalleSubministro.create(i);
                     control.item.edit(it);
                 }
+                Map<String,Object>p=new HashMap();
+                p.put("COD_SUB", sub.getCod());
+                p.put("Logo", getClass().getResourceAsStream("/Asset/logoK12-black.png"));
+                new report.JasperReportController("OrdenEntradaReport",db.getConection()).getReport(p);
                 view.btnQuitarTodo.doClick();
                 view.btnLimpiar.doClick();
                 view.txtDesc.setText(null);

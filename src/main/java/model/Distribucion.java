@@ -46,7 +46,7 @@ public class Distribucion implements Serializable {
     private Integer id;
     @Basic(optional = false)
     @Column(name = "FECHA", nullable = false)
-    @Temporal(TemporalType.DATE)
+    @Temporal(TemporalType.TIMESTAMP)
     private Date fecha;
     @Column(name = "DESCRIPCION", length = 255)
     private String descripcion;
@@ -157,6 +157,14 @@ public class Distribucion implements Serializable {
     @Override
     public String toString() {
         return "model.Distribucion[ id=" + id + " ]";
+    }
+    
+    public double getTotal(){
+        double t=0;
+        for (DetalleDis i : this.detalleDisList){
+            t+=i.getSubtotal();
+        }
+        return t;
     }
     
 }

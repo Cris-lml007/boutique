@@ -150,4 +150,12 @@ public class Subministro implements Serializable {
         return "model.Subministro[ cod=" + cod + " ]";
     }
     
+    public double getTotal(){
+        double t=0;
+        for(DetalleSub i : detalleSubList){
+            t+=i.getSubtotal();
+        }
+        return t;
+    }
+    
 }

@@ -10,7 +10,9 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Vector;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.JFrame;
@@ -23,6 +25,8 @@ import model.Item;
 import model.ProveedorDistribuidor;
 import model.TableJPA;
 import persistent.Control;
+import report.JasperReportController;
+import utility.lockInputType;
 import view.BuscarItemView;
 import view.RegistrarItemView;
 import view.RegistrarPDView;
@@ -56,6 +60,19 @@ public class RegistrarSalidaController {
         modelTable=new TableJPA(new String[]{"Producto","Cantidad","Precio","Subtotal"},new String[]{"productoName","cantidad","precio","subtotal"}, new Boolean[]{false,true,false,false});
         modelTable.loadMethod(DetalleDis.class);
         view.tbItem.setModel(modelTable);
+        lockType();
+    }
+    
+    public void lockType(){
+        lockInputType lock=new lockInputType();
+        lock.lockSymbol(view.txtNIT);
+        lock.lockAlfa(view.txtNIT);
+        lock.lockSymbol(editItem);
+        lock.lockSymbol(editPD);
+        lock.lockSymbol(view.txtCantidad);
+        lock.lockAlfa(view.txtCantidad);
+        lock.lockSymbol(view.txtCodItem);
+        lock.lockAlfa(view.txtCodItem);
     }
     
     public final void initAction(){        
@@ -283,9 +300,10 @@ public class RegistrarSalidaController {
             dis.setDescripcion(view.txtDesc.getText());
             dis.setEmpleado(emp);
             dis.setEncargado((Empleado) view.cbEncargado.getSelectedItem());
+            System.out.println("Este es el ci del encargado: "+((Empleado)view.cbEncargado.getSelectedItem()).getCi()+" ");
             try{
                 control.distribucion.create(dis);
-                System.out.println(dis.getId());
+                System.out.println("se creo el registro: "+dis.getId());
             }catch(Exception e){
                 System.out.println("hubo un error al crear subministro: "+e);
             }
@@ -296,8 +314,12 @@ public class RegistrarSalidaController {
                     control.item.edit(it);
                     i.setDistribucion(dis);
                     control.detalleDistribucion.create(i);
-                    dis=control.distribucion.findDistribucion(dis.getId());
+                    //dis=control.distribucion.findDistribucion(dis.getId());
                 }
+                Map<String,Object>parameters=new HashMap();
+                parameters.put("logo",DashboardController.getLogo());
+                parameters.put("COD_DIS", dis.getId());
+                new JasperReportController("OrdenSalidaReport", model.db.getConection()).getReport(parameters);
                 view.btnQuitarTodo.doClick();
                 view.btnLimpiar.doClick();
             }catch(Exception e){

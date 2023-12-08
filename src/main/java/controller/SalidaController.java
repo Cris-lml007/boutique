@@ -62,7 +62,7 @@ public class SalidaController {
                 initSQL+="u.DESTINO = ?p ";
                 v[1]=true;
                 ProveedorDistribuidor p=control.proveedorDis.findProveedorDistribuidor(Integer.valueOf(view.txtNIT.getText()));
-                parameter.put("p", p);
+                parameter.put("p", p.getCod());
             }
             if(view.dtFecha.getDate()!=null){
                 if(v[1] || v[0]) initSQL+="AND ";

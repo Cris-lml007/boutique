@@ -57,7 +57,7 @@ public class EntradaController {
                 initSQL+="u.PROVEEDOR = ?p ";
                 v[1]=true;
                 ProveedorDistribuidor p=control.proveedorDis.findProveedorDistribuidor(Integer.valueOf(view.txtNIT.getText()));
-                parameter.put("p", p);
+                parameter.put("p", p.getCod());
             }
             if(view.dtFecha.getDate()!=null){
                 if(v[1] || v[0]) initSQL+="AND ";
@@ -92,8 +92,8 @@ public class EntradaController {
                 HashMap<String,Object> p=new HashMap<>();
                 System.out.println(id);
                 p.put("COD_SUB", id);
-                InputStream logo=getClass().getResourceAsStream("/Asset/logoK12-black.png");
-                p.put("Logo", logo);
+                //InputStream logo=getClass().getResourceAsStream("/Asset/logoK12-black.png");
+                p.put("Logo", getClass().getResourceAsStream("/Asset/logoK12-black.png"));
                 new report.JasperReportController("OrdenEntradaReport",db.getConection()).getReport(p);
             }
 

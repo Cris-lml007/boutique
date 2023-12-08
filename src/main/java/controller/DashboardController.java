@@ -8,6 +8,7 @@ import com.formdev.flatlaf.FlatDarkLaf;
 import com.formdev.flatlaf.FlatLightLaf;
 import java.awt.Color;
 import java.awt.event.ActionEvent;
+import java.io.InputStream;
 import java.util.Collections;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -43,6 +44,7 @@ public final class DashboardController {
     private boolean active=false;
     private db database;
     private static JFrame frame;
+    public static InputStream logo;
     
     public DashboardController(DashboardView v,Empleado user){
         try{
@@ -60,6 +62,7 @@ public final class DashboardController {
         initAction();
         frame=v;
         if(current.getRol()!=Rol.gerente ) view.btnAdmin.setVisible(false);
+        logo=getClass().getResourceAsStream("/Asset/logoK12-black.png");
     }
     
     
@@ -136,6 +139,10 @@ public final class DashboardController {
     
     public static JFrame getFrame(){
         return frame;
+    }
+    
+    public static InputStream getLogo(){
+        return logo;
     }
     
 }

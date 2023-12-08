@@ -5,6 +5,7 @@
 package model;
 
 import java.io.Serializable;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 import javax.persistence.Basic;
 import javax.persistence.Column;
@@ -100,8 +101,8 @@ public class HistorialItem implements Serializable {
         this.id = id;
     }
 
-    public Date getFecha() {
-        return fecha;
+    public String getFecha() {
+        return new SimpleDateFormat("dd-MM-yyyy HH:mm").format(fecha);
     }
 
     public void setFecha(Date fecha) {
@@ -143,6 +144,18 @@ public class HistorialItem implements Serializable {
 
     public Empleado getEmpleado() {
         return empleado;
+    }
+    
+    public String getEmpleadoCI(){
+        return empleado.getCi().toString();
+    }
+    
+    public String getItemCod(){
+        return item.getCod().toString();
+    }
+    
+    public String getAccionName(){
+        return accion.getEstadoEmpleado();
     }
 
     public void setEmpleado(Empleado empleado) {

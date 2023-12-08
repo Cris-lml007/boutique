@@ -8,12 +8,12 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import javax.swing.DefaultComboBoxModel;
-import model.Empleado;
 import model.Item;
-import model.ProveedorDistribuidor;
 import model.TableJPA;
 import model.TipoItem;
+import model.db;
 import persistent.Control;
+import view.DashboardView;
 import view.InventarioView;
 
 /**
@@ -30,6 +30,7 @@ public class InventarioController {
     String atrib[]={"cod","nombre","cantidad","tipoName"};
     Boolean edit[]={false,false,false,false};
     String sql;
+    public Map<String,Object> parameters;
     
     public InventarioController(InventarioView v){
         this.view=v;
@@ -53,23 +54,21 @@ public class InventarioController {
         });
         
         view.btnBuscar.addActionListener((ae) -> {
+            parameters=new HashMap();
             Map<String,Object>parameter=new HashMap<>();
             String initSQL="SELECT u.* FROM ITEM u WHERE u.CANTIDAD > 0 ";
             if(!view.txtCod.getText().equals("")){
                 initSQL+="AND ";
                 initSQL+="u.COD = ?c ";
                 parameter.put("c", Integer.valueOf(view.txtCod.getText()));
-            }
-            if(!view.txtNombre.getText().equals("")){
-                initSQL+="AND ";
-                initSQL+="u.NOMBRE = ?p ";
-                parameter.put("p", view.txtNombre.getText());
+                parameters.put("Item", Integer.valueOf(view.txtCod.getText()));
             }
             if(view.cbTipo.getSelectedItem()!=TipoItem.Todo){
                 initSQL+="AND ";
                 initSQL+="u.TIPO = ?t ";
                 TipoItem i=(TipoItem) view.cbTipo.getSelectedItem();
                 parameter.put("t", i.ordinal());
+                parameters.put("Tipo", i.ordinal());
             }
             List<Item>l=control.item.QuerySQL(initSQL, parameter);
             modelTable.setData(l);
@@ -77,7 +76,11 @@ public class InventarioController {
         });
         
         view.btnExportar.addActionListener((ae) -> {
-            
+            if(parameters==null) parameters=new HashMap();
+            parameters.put("CI", LoginController.getCurrentEmpleado().getCi());
+            if(DashboardController.getLogo()!=null) System.out.println("no hay error en la imagen: "+DashboardController.getLogo());
+            parameters.put("Logo", getClass().getResourceAsStream("/Asset/logoK12-black.png"));
+            new report.JasperReportController("InventarioReport", db.getConection()).getReport(parameters);
         });
     }
     

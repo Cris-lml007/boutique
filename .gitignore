@@ -1,1 +1,11 @@
 /target/
+/src/main/java/view/administracion/HistorialCambiosView.form
+/src/main/resources/Report/InventarioReport.jasper
+/src/main/java/view/administracion/RecuperacionView.form
+/src/main/java/view/administracion/ReporteView.form
+/src/main/java/view/administracion/HistorialCambiosView.java
+/src/main/java/controller/HistorialCambiosController.java
+/src/main/java/view/administracion/RecuperacionView.java
+/src/main/java/view/administracion/ReporteView.java
+/src/main/java/controller/ReporteController.java
+/src/main/resources/Report/HistorialCambios.jasper

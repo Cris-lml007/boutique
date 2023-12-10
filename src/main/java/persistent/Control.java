@@ -4,9 +4,15 @@
  */
 package persistent;
 
+import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
+import javax.persistence.ColumnResult;
+import javax.persistence.ConstructorResult;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.Persistence;
+import javax.persistence.SqlResultSetMapping;
 import model.Empleado;
 import model.Item;
 import org.eclipse.persistence.config.QueryHints;
@@ -64,31 +70,106 @@ public class Control {
                 .getResultList();
     }
     
-    public static void main(String args []){
-        Control a= new Control();
-        List<Item> i=a.item.findItemEntities("%TELA%");
-        System.out.println("el tamaño es: "+i.size());
-        for(Item q : i){
-            System.out.println("es: "+q);
+    public List<TotalByDateDTO> getTotalByDateSubministro(Integer a,Integer m) {
+        List<Object[]> results = subministro.getEntityManager().createNativeQuery(
+                "SELECT DATE(s.FECHA) AS fecha, SUM(d.PRECIO * d.CANTIDAD) AS total "
+                        + "FROM SUBMINISTRO s LEFT JOIN DETALLE_SUB d ON d.SUBMINISTRO = s.COD "
+                        + "WHERE "
+                        + "CASE WHEN ?a IS NULL THEN TRUE ELSE EXTRACT(YEAR FROM s.FECHA)= ?a END "
+                        + "AND "
+                        + "CASE WHEN ?m IS NULL THEN TRUE ELSE EXTRACT(MONTH FROM s.FECHA) = ?m END "
+                        + "GROUP BY DATE(s.FECHA)",
+                "TotalByDateMapping"
+        )
+                .setParameter("a", a)
+                .setParameter("m", m)
+                .getResultList();
+
+        List<TotalByDateDTO> totalByDateDTOList = new ArrayList<>();
+
+        for (Object[] result : results) {
+            Date fecha = (Date) result[0];
+            BigDecimal total = (BigDecimal) result[1];
+
+            TotalByDateDTO dto = new TotalByDateDTO(fecha, total);
+            totalByDateDTOList.add(dto);
         }
-        /*Empleado q=a.empleado.findEmpleado(7329034);//new Empleado(7329034,"Abalos","Cristian",Rol.gerente);
-        q.setUsuario("cris");
-        q.setContraseña("12345");
-        Pais p=a.pais.findPais("ARG");
-        
-        try{
-            a.pais.edit(p);
-            a.empleado.edit(q);
-        }catch(Exception e){
-            System.out.println("error "+e);
+
+        return totalByDateDTOList;
+    }
+    
+        public List<TotalByDateDTO> getTotalByDateDistribucion(Integer a,Integer m) {
+        List<Object[]> results = subministro.getEntityManager().createNativeQuery(
+                "SELECT DATE(s.FECHA) AS fecha, SUM(i.PRECIO * d.CANTIDAD) AS total "
+                        + "FROM DISTRIBUCION s "
+                        + "LEFT JOIN DETALLE_DIS d ON d.DISTRIBUCION = s.ID "
+                        + "LEFT JOIN ITEM i ON d.PRODUCTO = i.COD "
+                        + "WHERE "
+                        + "CASE WHEN ?a IS NULL THEN TRUE ELSE EXTRACT(YEAR FROM s.FECHA)= ?a END "
+                        + "AND "
+                        + "CASE WHEN ?m IS NULL THEN TRUE ELSE EXTRACT(MONTH FROM s.FECHA) = ?m END "
+                        + "GROUP BY DATE(s.FECHA)",
+                "TotalByDateMapping"
+        )
+                .setParameter("a", a)
+                .setParameter("m", m)
+                .getResultList();
+
+        List<TotalByDateDTO> totalByDateDTOList = new ArrayList<>();
+
+        for (Object[] result : results) {
+            Date fecha = (Date) result[0];
+            BigDecimal total = (BigDecimal) result[1];
+
+            TotalByDateDTO dto = new TotalByDateDTO(fecha, total);
+            totalByDateDTOList.add(dto);
         }
-        q=a.empleado.findEmpleado(7328034);
-        /*Empleado q=a.empleado.login("cris", "12345");
-        if(q==null) System.out.println("error");
-        else{
-            System.out.println("mmmm...parece que funciono");
-            System.out.println(q.getRol());
-        }*/
-        
+
+        return totalByDateDTOList;
+    }
+
+
+    @SqlResultSetMapping(
+        name = "TotalByDateMapping",
+        classes = @ConstructorResult(
+            targetClass = TotalByDateDTO.class,
+            columns = {
+                @ColumnResult(name = "fecha", type = Date.class),
+                @ColumnResult(name = "total", type = BigDecimal.class)
+            }
+        )
+    )
+    public final class TotalByDateDTO {
+        private Date fecha;
+        private BigDecimal total;
+
+        public TotalByDateDTO(Date fecha, BigDecimal total) {
+            this.fecha = fecha;
+            this.total = total;
+        }
+
+        public Date getFecha() {
+            return fecha;
+        }
+
+        public BigDecimal getTotal() {
+            return total;
+        }
+
+        @Override
+        public String toString() {
+            return "TotalByDateDTO{" + "fecha=" + fecha + ", total=" + total + '}';
+        }
+    }
+
+    public static void main(String[] args) {
+        Control a = new Control();
+        List<TotalByDateDTO> l = a.getTotalByDateDistribucion(2023,null);
+        if (!l.isEmpty()) {
+            System.out.println("No está vacía: " + l);
+            for (TotalByDateDTO i : l) {
+                System.out.println(i);
+            }
+        }
     }
 }

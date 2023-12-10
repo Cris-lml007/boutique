@@ -27,6 +27,9 @@ import model.DetalleDis;
 import model.DetalleSub;
 import model.Distribucion;
 import model.Subministro;
+import org.jfree.data.time.Day;
+import org.jfree.data.time.Hour;
+import org.jfree.data.time.Minute;
 import persistent.Control;
 import utility.WindowDesign;
 
@@ -47,6 +50,7 @@ public class ReporteController {
     String atrib[]={"productoName","cantidad","precio","subtotal"};
     Boolean edit[]={false,false,false,false};
     Map<String, String>dataInfo;
+    TimeSeriesCollection dataSerie;
 
     public ReporteController(ReporteView v) {
         this.view=v;
@@ -60,7 +64,6 @@ public class ReporteController {
         g2.add(view.rbtnGanancia);
         g2.add(view.rbtnDistribucion);
         initAction();
-        view.btnExportar.setVisible(false);
     }
     
     public void LoadData(){
@@ -90,9 +93,13 @@ public class ReporteController {
                 parameter.put("d", year);
                 List<Subministro>ls=control.subministro.QuerySQL(sql, parameter);
                 List<DetalleSub> l =new ArrayList();
-                for (Subministro i : ls){
+                for(Subministro i : ls){
                     t+=i.getTotal();
-                    l.addAll(l.size(), i.getDetalleSubList());
+                    l.addAll(l.size(),i.getDetalleSubList());
+                }
+                TimeSeries s=new TimeSeries("Gastos en Subministro");
+                for (Control.TotalByDateDTO i : control.getTotalByDateSubministro(year,null)){
+                    s.add(new Day(i.getFecha()),i.getTotal());
                 }
                 modelSubministro.setData(l);
                 view.tbDetalle.setModel(modelSubministro);
@@ -101,6 +108,9 @@ public class ReporteController {
                             Double.parseDouble(dataInfo.get(i.getProductoName())!= null ? dataInfo.get(i.getProductoName()) : "0") + i.getSubtotal())
                     );
                 }
+                dataSerie=new TimeSeriesCollection();
+                dataSerie.addSeries(s);
+                
             }else if(select==2){
                 String sql="SELECT u.* FROM DISTRIBUCION u WHERE EXTRACT(YEAR FROM u.FECHA) = ?d";
                 Map<String,Object> parameter=new HashMap();
@@ -119,6 +129,13 @@ public class ReporteController {
                             Double.parseDouble(dataInfo.get(i.getProductoName())!= null ? dataInfo.get(i.getProductoName()) : "0") + i.getSubtotal())
                     );
                 }
+                TimeSeries s=new TimeSeries("Ganancias");
+                for (Control.TotalByDateDTO i : control.getTotalByDateDistribucion(year,null)){
+                    s.add(new Day(i.getFecha()),i.getTotal());
+                }
+                dataSerie=new TimeSeriesCollection();
+                dataSerie.addSeries(s);
+                
             }else if(select==3){
                 String sql="SELECT u.* FROM DISTRIBUCION u WHERE EXTRACT(YEAR FROM u.FECHA) = ?d";
                 Map<String,Object> parameter=new HashMap();
@@ -155,6 +172,13 @@ public class ReporteController {
                             Double.parseDouble(dataInfo.get(i.getProductoName())!= null ? dataInfo.get(i.getProductoName()) : "0") + i.getSubtotal())
                     );
                 }
+                TimeSeries s=new TimeSeries("Gastos en Subministro");
+                for (Control.TotalByDateDTO i : control.getTotalByDateSubministro(year,month)){
+                    s.add(new Day(i.getFecha()),i.getTotal());
+                }
+                dataSerie=new TimeSeriesCollection();
+                dataSerie.addSeries(s);
+                
             }else if(select==2){
                 String sql="SELECT u.* FROM DISTRIBUCION u WHERE EXTRACT(YEAR FROM u.FECHA) = ?d AND EXTRACT(MONTH FROM u.FECHA) = ?m";
                 Map<String,Object> parameter=new HashMap();
@@ -175,6 +199,13 @@ public class ReporteController {
                             Double.parseDouble(dataInfo.get(i.getProductoName())!= null ? dataInfo.get(i.getProductoName()) : "0") + i.getSubtotal())
                     );
                 }
+                TimeSeries s=new TimeSeries("Ganancias");
+                for (Control.TotalByDateDTO i : control.getTotalByDateDistribucion(year,month)){
+                    s.add(new Day(i.getFecha()),i.getTotal());
+                }
+                dataSerie=new TimeSeriesCollection();
+                dataSerie.addSeries(s);
+                
             }else if(select==3){
                 String sql="SELECT u.* FROM DISTRIBUCION u WHERE EXTRACT(YEAR FROM u.FECHA) = ?d AND EXTRACT(MONTH FROM u.FECHA) = ?m";
                 Map<String,Object> parameter=new HashMap();
@@ -194,7 +225,7 @@ public class ReporteController {
             }
         }
         view.txtTotal.setText(t+"");
-        loadGraphics("torta");
+        loadGraphics("torta",select!=3 ? true : false);
     }
     
     public void initAction(){
@@ -204,9 +235,8 @@ public class ReporteController {
     }
     
     
-    public void loadGraphics(String title){
+    public void loadGraphics(String title,boolean active){
         DefaultPieDataset dataPie = new DefaultPieDataset();
-        TimeSeriesCollection dataSerie=new TimeSeriesCollection();
         Iterator it= dataInfo.keySet().iterator();
         while(it.hasNext()){
             String key=(String)it.next();
@@ -219,6 +249,11 @@ public class ReporteController {
         panel.setSize(view.image1.getPreferredSize().width,view.image1.getPreferredSize().height);
         new WindowDesign().callPanel(panel, view.image1);
         
+        JFreeChart line=ChartFactory.createTimeSeriesChart("Linea del Tiempo", "Fecha", "Bs.", dataSerie);
+        ChartPanel p=new ChartPanel(line);
+        p.setSize(255,258);
+        p.setMouseWheelEnabled(true);
+        new WindowDesign().callPanel(active ? p  : new JPanel(),view.image2);
         
     }
     

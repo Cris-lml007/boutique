@@ -5,6 +5,7 @@
 package model;
 
 import java.io.Serializable;
+import java.lang.annotation.Native;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
@@ -83,6 +84,10 @@ public class Subministro implements Serializable {
 
     public String getFecha() {
         return new SimpleDateFormat("dd-MM-yyyy HH:mm").format(fecha);
+    }
+    
+    public Date getFechaDate(){
+        return fecha;
     }
 
     public void setFecha(Date fecha) {

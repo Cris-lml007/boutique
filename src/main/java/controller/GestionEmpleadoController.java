@@ -4,6 +4,7 @@
  */
 package controller;
 
+import java.awt.Color;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.event.MouseEvent;
@@ -15,6 +16,7 @@ import java.util.logging.Logger;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.JOptionPane;
 import javax.swing.JTextField;
+import javax.swing.table.JTableHeader;
 import model.Empleado;
 import model.Estado;
 import model.Rol;
@@ -61,6 +63,9 @@ public class GestionEmpleadoController {
         initAction();
         new WindowDesign().JPasswordFieldPlaceHolder(view.passNewPassword, "********");
         new WindowDesign().JPasswordFieldPlaceHolder(view.passVerifyPassword, "********");
+        JTableHeader t=view.tbEmpleado.getTableHeader();
+        t.setBackground(new Color(25, 25, 25));
+        t.setForeground(Color.white);
     }
     
     public void initAction(){

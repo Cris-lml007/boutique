@@ -4,6 +4,7 @@
  */
 package controller;
 
+import java.awt.Color;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -23,6 +24,7 @@ import org.jfree.data.time.TimeSeriesCollection;
 import org.jfree.data.xy.XYDataset;
 import view.administracion.ReporteView;
 import javax.swing.*;
+import javax.swing.table.JTableHeader;
 import model.DetalleDis;
 import model.DetalleSub;
 import model.Distribucion;
@@ -64,6 +66,9 @@ public class ReporteController {
         g2.add(view.rbtnGanancia);
         g2.add(view.rbtnDistribucion);
         initAction();
+        JTableHeader t=view.tbDetalle.getTableHeader();
+        t.setBackground(new Color(25, 25, 25));
+        t.setForeground(Color.white);
     }
     
     public void LoadData(){

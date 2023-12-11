@@ -4,11 +4,13 @@
  */
 package controller;
 
+import java.awt.Color;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import javax.swing.DefaultComboBoxModel;
+import javax.swing.table.JTableHeader;
 import model.Estado;
 import model.HistorialItem;
 import model.TableJPA;
@@ -42,6 +44,9 @@ public class HistorialCambiosController {
         modelEstado=new DefaultComboBoxModel(new Object[]{"Todos",Estado.CREADO,Estado.MODIFICADO,Estado.ELIMINADO});
         view.cbAccion.setModel(modelEstado);
         view.btnBuscarR.doClick();
+        JTableHeader t=view.tbHistorial.getTableHeader();
+        t.setBackground(new Color(25, 25, 25));
+        t.setForeground(Color.white);
     }
     
     public void initAction(){

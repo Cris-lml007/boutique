@@ -5,6 +5,7 @@
 package controller;
 
 import com.mysql.cj.x.protobuf.MysqlxCrud;
+import java.awt.Color;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
@@ -20,6 +21,7 @@ import javax.swing.JComboBox;
 import javax.swing.JOptionPane;
 import javax.swing.event.TableModelListener;
 import javax.swing.table.DefaultTableModel;
+import javax.swing.table.JTableHeader;
 import javax.swing.table.TableModel;
 import model.Localizacion;
 import model.Pais;
@@ -61,6 +63,12 @@ public class RegistrarLocalController {
         lock.lockSymbol(view.txtCiudad);
         loadData();
         initAction();
+        JTableHeader t=view.tbLocal.getTableHeader();
+        t.setBackground(new Color(25, 25, 25));
+        t.setForeground(Color.white);
+        JTableHeader t1=view.tbPais.getTableHeader();
+        t1.setBackground(new Color(25, 25, 25));
+        t1.setForeground(Color.white);
     }
     
     public void initAction(){

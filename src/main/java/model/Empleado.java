@@ -18,6 +18,8 @@ import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
+import model.Estado;
+import model.Rol;
 
 /**
  *
@@ -41,6 +43,8 @@ public class Empleado implements Serializable {
     @Column(name = "ACTIVO")
     @Enumerated(EnumType.ORDINAL)
     private Estado activo;
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "duenio", fetch = FetchType.LAZY)
+    private List<Recuperacion> recuperacionList;
 
     private static final long serialVersionUID = 1L;
     @Id
@@ -182,6 +186,11 @@ public class Empleado implements Serializable {
         this.historialItemList = historialItemList;
     }
 
+
+    public String getActivoName(){
+        return activo.getEstadoEmpleado();
+    }
+
     public Rol getRol() {
         return rol;
     }
@@ -193,13 +202,17 @@ public class Empleado implements Serializable {
     public Estado getActivo() {
         return activo;
     }
-    
-    public String getActivoName(){
-        return activo.getEstadoEmpleado();
-    }
 
     public void setActivo(Estado activo) {
         this.activo = activo;
+    }
+
+    public List<Recuperacion> getRecuperacionList() {
+        return recuperacionList;
+    }
+
+    public void setRecuperacionList(List<Recuperacion> recuperacionList) {
+        this.recuperacionList = recuperacionList;
     }
     
 }

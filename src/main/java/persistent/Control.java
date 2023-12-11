@@ -35,6 +35,8 @@ public class Control {
     public SubministroJpaController subministro;
     public ProveedorDistribuidorJpaController proveedorDis;
     public HistorialItemJpaController historialItem;
+    public RecuperacionJpaController recuperacion;
+    public BloqueoJpaController bloqueo;
 
     public Control() {
         conexion=Persistence.createEntityManagerFactory("JpaBoutique");
@@ -48,6 +50,8 @@ public class Control {
         subministro=new SubministroJpaController(conexion);
         proveedorDis=new ProveedorDistribuidorJpaController(conexion);
         historialItem=new HistorialItemJpaController(conexion);
+        recuperacion=new RecuperacionJpaController(conexion);
+        bloqueo=new BloqueoJpaController(conexion);
     }
     
     public long totalSubministroByEmpleado(Empleado e){

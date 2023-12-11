@@ -8,6 +8,7 @@ import utility.WindowDesign;
 import view.AdministracionView;
 import view.administracion.GestionEmpleadoView;
 import view.administracion.HistorialCambiosView;
+import view.administracion.RecuperacionView;
 import view.administracion.ReporteView;
 
 /**
@@ -20,7 +21,6 @@ public class AdministracionController {
     public AdministracionController(AdministracionView v) {
         this.view=v;
         initAction();
-        view.btnRecuperacion.setVisible(false);
     }
     
     public void initAction(){
@@ -40,6 +40,12 @@ public class AdministracionController {
             ReporteView v=new ReporteView();
             new WindowDesign().callPanel(v, view);
             new ReporteController(v);
+        });
+        
+        view.btnRecuperacion.addActionListener((ae) -> {
+            RecuperacionView v=new RecuperacionView();
+            new WindowDesign().callPanel(v, view);
+            new RecuperacionController(v);
         });
     }
     

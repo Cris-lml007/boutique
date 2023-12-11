@@ -4,11 +4,13 @@
  */
 package controller;
 
+import java.awt.Color;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.math.BigDecimal;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.JOptionPane;
+import javax.swing.table.JTableHeader;
 import model.Empleado;
 import model.Estado;
 import model.HistorialItem;
@@ -34,6 +36,9 @@ public class RegistrarItemController{
         this.view=v;
         loadData();
         initAction();
+        JTableHeader t=view.tbItem.getTableHeader();
+        t.setBackground(new Color(25, 25, 25));
+        t.setForeground(Color.white);
     }
     
     public void initAction(){

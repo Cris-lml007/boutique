@@ -4,6 +4,7 @@
  */
 package controller;
 
+import java.awt.Color;
 import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
@@ -17,6 +18,7 @@ import javax.swing.DefaultComboBoxModel;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.JTextField;
+import javax.swing.table.JTableHeader;
 import model.Localizacion;
 import model.ProveedorDistribuidor;
 import model.TableJPA;
@@ -48,6 +50,9 @@ public class RegistrarPDController {
         editComponent=(JTextField) view.cpLocal.getEditor().getEditorComponent();
         loadData();
         initAction();
+        JTableHeader t=view.tbPD.getTableHeader();
+        t.setBackground(new Color(25, 25, 25));
+        t.setForeground(Color.white);
     }
     
     public final void initAction(){

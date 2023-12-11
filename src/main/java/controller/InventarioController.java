@@ -4,10 +4,12 @@
  */
 package controller;
 
+import java.awt.Color;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import javax.swing.DefaultComboBoxModel;
+import javax.swing.table.JTableHeader;
 import model.Item;
 import model.TableJPA;
 import model.TipoItem;
@@ -46,6 +48,9 @@ public class InventarioController {
             TipoItem.sinTipo
         });
         view.cbTipo.setModel(modelCb);
+        JTableHeader t=view.tbItem.getTableHeader();
+        t.setBackground(new Color(25, 25, 25));
+        t.setForeground(Color.white);
     }
     
     public void initAction(){

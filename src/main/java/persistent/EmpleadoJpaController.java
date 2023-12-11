@@ -20,6 +20,7 @@ import model.Estado;
 import model.HistorialItem;
 import model.Rol;
 import model.md5;
+import model.Recuperacion;
 import persistent.exceptions.IllegalOrphanException;
 import persistent.exceptions.NonexistentEntityException;
 import persistent.exceptions.PreexistingEntityException;
@@ -52,6 +53,9 @@ public class EmpleadoJpaController implements Serializable {
         if (empleado.getHistorialItemList() == null) {
             empleado.setHistorialItemList(new ArrayList<HistorialItem>());
         }
+        if (empleado.getRecuperacionList() == null) {
+            empleado.setRecuperacionList(new ArrayList<Recuperacion>());
+        }
         EntityManager em = null;
         try {
             em = getEntityManager();
@@ -80,6 +84,12 @@ public class EmpleadoJpaController implements Serializable {
                 attachedHistorialItemList.add(historialItemListHistorialItemToAttach);
             }
             empleado.setHistorialItemList(attachedHistorialItemList);
+            List<Recuperacion> attachedRecuperacionList = new ArrayList<Recuperacion>();
+            for (Recuperacion recuperacionListRecuperacionToAttach : empleado.getRecuperacionList()) {
+                recuperacionListRecuperacionToAttach = em.getReference(recuperacionListRecuperacionToAttach.getClass(), recuperacionListRecuperacionToAttach.getId());
+                attachedRecuperacionList.add(recuperacionListRecuperacionToAttach);
+            }
+            empleado.setRecuperacionList(attachedRecuperacionList);
             em.persist(empleado);
             for (Subministro subministroListSubministro : empleado.getSubministroList()) {
                 Empleado oldEmpleadoOfSubministroListSubministro = subministroListSubministro.getEmpleado();
@@ -117,6 +127,15 @@ public class EmpleadoJpaController implements Serializable {
                     oldEmpleadoOfHistorialItemListHistorialItem = em.merge(oldEmpleadoOfHistorialItemListHistorialItem);
                 }
             }
+            for (Recuperacion recuperacionListRecuperacion : empleado.getRecuperacionList()) {
+                Empleado oldDuenioOfRecuperacionListRecuperacion = recuperacionListRecuperacion.getDuenio();
+                recuperacionListRecuperacion.setDuenio(empleado);
+                recuperacionListRecuperacion = em.merge(recuperacionListRecuperacion);
+                if (oldDuenioOfRecuperacionListRecuperacion != null) {
+                    oldDuenioOfRecuperacionListRecuperacion.getRecuperacionList().remove(recuperacionListRecuperacion);
+                    oldDuenioOfRecuperacionListRecuperacion = em.merge(oldDuenioOfRecuperacionListRecuperacion);
+                }
+            }
             em.getTransaction().commit();
         } catch (Exception ex) {
             if (findEmpleado(empleado.getCi()) != null) {
@@ -144,6 +163,8 @@ public class EmpleadoJpaController implements Serializable {
             List<Distribucion> distribucionList1New = empleado.getDistribucionList1();
             List<HistorialItem> historialItemListOld = persistentEmpleado.getHistorialItemList();
             List<HistorialItem> historialItemListNew = empleado.getHistorialItemList();
+            List<Recuperacion> recuperacionListOld = persistentEmpleado.getRecuperacionList();
+            List<Recuperacion> recuperacionListNew = empleado.getRecuperacionList();
             List<String> illegalOrphanMessages = null;
             for (HistorialItem historialItemListOldHistorialItem : historialItemListOld) {
                 if (!historialItemListNew.contains(historialItemListOldHistorialItem)) {
@@ -151,6 +172,14 @@ public class EmpleadoJpaController implements Serializable {
                         illegalOrphanMessages = new ArrayList<String>();
                     }
                     illegalOrphanMessages.add("You must retain HistorialItem " + historialItemListOldHistorialItem + " since its empleado field is not nullable.");
+                }
+            }
+            for (Recuperacion recuperacionListOldRecuperacion : recuperacionListOld) {
+                if (!recuperacionListNew.contains(recuperacionListOldRecuperacion)) {
+                    if (illegalOrphanMessages == null) {
+                        illegalOrphanMessages = new ArrayList<String>();
+                    }
+                    illegalOrphanMessages.add("You must retain Recuperacion " + recuperacionListOldRecuperacion + " since its duenio field is not nullable.");
                 }
             }
             if (illegalOrphanMessages != null) {
@@ -184,6 +213,13 @@ public class EmpleadoJpaController implements Serializable {
             }
             historialItemListNew = attachedHistorialItemListNew;
             empleado.setHistorialItemList(historialItemListNew);
+            List<Recuperacion> attachedRecuperacionListNew = new ArrayList<Recuperacion>();
+            for (Recuperacion recuperacionListNewRecuperacionToAttach : recuperacionListNew) {
+                recuperacionListNewRecuperacionToAttach = em.getReference(recuperacionListNewRecuperacionToAttach.getClass(), recuperacionListNewRecuperacionToAttach.getId());
+                attachedRecuperacionListNew.add(recuperacionListNewRecuperacionToAttach);
+            }
+            recuperacionListNew = attachedRecuperacionListNew;
+            empleado.setRecuperacionList(recuperacionListNew);
             empleado = em.merge(empleado);
             for (Subministro subministroListOldSubministro : subministroListOld) {
                 if (!subministroListNew.contains(subministroListOldSubministro)) {
@@ -247,6 +283,17 @@ public class EmpleadoJpaController implements Serializable {
                     }
                 }
             }
+            for (Recuperacion recuperacionListNewRecuperacion : recuperacionListNew) {
+                if (!recuperacionListOld.contains(recuperacionListNewRecuperacion)) {
+                    Empleado oldDuenioOfRecuperacionListNewRecuperacion = recuperacionListNewRecuperacion.getDuenio();
+                    recuperacionListNewRecuperacion.setDuenio(empleado);
+                    recuperacionListNewRecuperacion = em.merge(recuperacionListNewRecuperacion);
+                    if (oldDuenioOfRecuperacionListNewRecuperacion != null && !oldDuenioOfRecuperacionListNewRecuperacion.equals(empleado)) {
+                        oldDuenioOfRecuperacionListNewRecuperacion.getRecuperacionList().remove(recuperacionListNewRecuperacion);
+                        oldDuenioOfRecuperacionListNewRecuperacion = em.merge(oldDuenioOfRecuperacionListNewRecuperacion);
+                    }
+                }
+            }
             em.getTransaction().commit();
         } catch (Exception ex) {
             String msg = ex.getLocalizedMessage();
@@ -284,6 +331,13 @@ public class EmpleadoJpaController implements Serializable {
                 }
                 illegalOrphanMessages.add("This Empleado (" + empleado + ") cannot be destroyed since the HistorialItem " + historialItemListOrphanCheckHistorialItem + " in its historialItemList field has a non-nullable empleado field.");
             }
+            List<Recuperacion> recuperacionListOrphanCheck = empleado.getRecuperacionList();
+            for (Recuperacion recuperacionListOrphanCheckRecuperacion : recuperacionListOrphanCheck) {
+                if (illegalOrphanMessages == null) {
+                    illegalOrphanMessages = new ArrayList<String>();
+                }
+                illegalOrphanMessages.add("This Empleado (" + empleado + ") cannot be destroyed since the Recuperacion " + recuperacionListOrphanCheckRecuperacion + " in its recuperacionList field has a non-nullable duenio field.");
+            }
             if (illegalOrphanMessages != null) {
                 throw new IllegalOrphanException(illegalOrphanMessages);
             }
@@ -310,7 +364,7 @@ public class EmpleadoJpaController implements Serializable {
             }
         }
     }
-    
+
     public List<Empleado> findEmpleadoEntities(boolean active){
         if(active){
             EntityManager e=getEntityManager();

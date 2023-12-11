@@ -4,6 +4,7 @@
  */
 package controller;
 
+import java.awt.Color;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.io.InputStream;
@@ -14,6 +15,7 @@ import java.util.Map;
 import java.util.Vector;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.JOptionPane;
+import javax.swing.table.JTableHeader;
 import model.Distribucion;
 import model.Empleado;
 import model.ProveedorDistribuidor;
@@ -43,6 +45,9 @@ public class SalidaController {
         loadData();
         initAction();
         view.btnRango.doClick();
+        JTableHeader t=view.tbEntrada.getTableHeader();
+        t.setBackground(new Color(25, 25, 25));
+        t.setForeground(Color.white);
     }
     
     

@@ -5,12 +5,19 @@
 package view;
 
 import controller.LoginController;
+import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.Persistence;
 import javax.swing.ImageIcon;
 import javax.swing.JOptionPane;
 import javax.swing.SwingWorker;
+import model.Bloqueo;
+import model.Recuperacion;
+import model.Usb;
+import model.md5;
 import persistent.Control;
 import utility.LoadImage;
 
@@ -140,7 +147,7 @@ public class SplashView extends javax.swing.JFrame implements Runnable{
 
     
     
-    public void verifyConexion(){
+    public boolean verifyConexion(){
         try{
             EntityManagerFactory manager=Persistence.createEntityManagerFactory("JpaBoutique");
             EntityManager conexion=manager.createEntityManager();
@@ -156,11 +163,41 @@ public class SplashView extends javax.swing.JFrame implements Runnable{
                     if(respuesta==0) verifyConexion();
                     else System.exit(0);
         }
+        if(((Bloqueo)new Control().bloqueo.findBloqueo(1)).getVal()==3){
+            JOptionPane.showMessageDialog(rootPane, "Sistema bloqueado permanentemente");
+            return false;
+        }
+        return true;
     }
     @Override
     public void run() {
         int r=1;
-        verifyConexion();
+        if(!verifyConexion()){
+            Control c=new Control();
+            boolean active=false;
+            List<Recuperacion>lr=c.recuperacion.findRecuperacionEntities();
+            while(!active){
+                List<Usb>l=Usb.getUSBDevices();
+                for(Recuperacion i : lr){
+                    for(Usb q : l){
+                        if(i.getLlave().equals(md5.getMD5Hash(q.getUUID()))){
+                            Bloqueo b=c.bloqueo.findBloqueo(1);
+                            b.setVal(0);
+                            b.setFechaA(null);
+                            try {
+                                c.bloqueo.edit(b);
+                                JOptionPane.showMessageDialog(rootPane, "Sistema Desbloqueado");
+                                active=true;
+                                break;
+                            } catch (Exception ex) {
+                                Logger.getLogger(SplashView.class.getName()).log(Level.SEVERE, null, ex);
+                            }
+                        }
+                    }
+                    if(active) break;
+                }
+            }
+        }
         try{
             for(int i=0;i<=100;i++){
                 Thread.sleep(30);

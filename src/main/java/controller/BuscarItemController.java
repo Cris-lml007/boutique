@@ -4,6 +4,7 @@
  */
 package controller;
 
+import java.awt.Color;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -11,6 +12,7 @@ import java.util.Vector;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.DefaultListModel;
 import javax.swing.JFrame;
+import javax.swing.table.JTableHeader;
 import model.Item;
 import model.TableJPA;
 import model.TipoItem;
@@ -42,6 +44,9 @@ public class BuscarItemController {
         view.cbTipo.setModel(modelTipo);
         loadData(control.item.findItemEntities(true));
         initAction();
+        JTableHeader t=view.tbItem.getTableHeader();
+        t.setBackground(new Color(25, 25, 25));
+        t.setForeground(Color.white);
     }
     
     public void initAction(){

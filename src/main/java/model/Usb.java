@@ -19,6 +19,25 @@ public class Usb {
     String name;
     String label;
     String UUID;
+
+    public String getName() {
+        return name;
+    }
+
+    public String getLabel() {
+        return label;
+    }
+
+    public String getUUID() {
+        return UUID;
+    }
+
+    @Override
+    public String toString() {
+        return label;
+    }
+    
+    
     
     public static List<Usb> getUSBDevices(){
         List<Usb>l=new ArrayList();

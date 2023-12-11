@@ -4,6 +4,7 @@
  */
 package controller;
 
+import java.awt.Color;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.io.InputStream;
@@ -12,6 +13,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import javax.swing.JOptionPane;
+import javax.swing.table.JTableHeader;
 import model.ProveedorDistribuidor;
 import model.Subministro;
 import model.TableJPA;
@@ -39,6 +41,9 @@ public class EntradaController {
         loadData();
         initAction();
         view.btnRango.doClick();
+        JTableHeader t=view.tbEntrada.getTableHeader();
+        t.setBackground(new Color(25, 25, 25));
+        t.setForeground(Color.white);
     }
     
     public void initAction(){

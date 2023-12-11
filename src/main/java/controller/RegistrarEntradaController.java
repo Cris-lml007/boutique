@@ -4,6 +4,7 @@
  */
 package controller;
 
+import java.awt.Color;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.event.MouseEvent;
@@ -18,6 +19,7 @@ import javax.swing.DefaultComboBoxModel;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.JTextField;
+import javax.swing.table.JTableHeader;
 import model.DetalleSub;
 import model.Empleado;
 import model.Item;
@@ -58,6 +60,9 @@ public class RegistrarEntradaController {
         modelTable=new TableJPA(new String[]{"Producto","Cantidad","Precio","Subtotal"},new String[]{"productoName","cantidad","precio","subtotal"}, new Boolean[]{false,true,true,false});
         modelTable.loadMethod(DetalleSub.class);
         view.tbItem.setModel(modelTable);
+        JTableHeader t=view.tbItem.getTableHeader();
+        t.setBackground(new Color(25, 25, 25));
+        t.setForeground(Color.white);
     }
     
     public final void initAction(){        
